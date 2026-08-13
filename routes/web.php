@@ -59,7 +59,7 @@ Route::middleware('auth')->group(function () {   // ✅ Correction
         // Paiements (ajoutés)
         Route::get('/{id}/payer-tunnel', [LotWebController::class, 'payerTunnel'])->name('payerTunnel');
         Route::get('/{id}/payer-chambre', [LotWebController::class, 'payerChambre'])->name('payerChambre');
-        Route::post('/{id}/assigner-chambre', [LotWebController::class, 'assignerChambre'])->name('lots.assignerChambre');
+
     });
 
     Route::get('/entrees', [LotWebController::class, 'create'])->name('entrees.index');
