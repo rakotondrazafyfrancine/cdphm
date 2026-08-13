@@ -47,7 +47,6 @@ Route::middleware('auth')->group(function () {   // ✅ Correction
         Route::get('/create', [LotWebController::class, 'create'])->name('create');
         Route::post('/', [LotWebController::class, 'store'])->name('store');
         Route::post('/transferer', [LotWebController::class, 'transferer'])->name('transferer');
-        Route::post('/{id}/assigner-tunnel', [TunnelWebController::class, 'assignerLot'])->name('assignerTunnel');
         Route::post('/{id}/sortir', [LotWebController::class, 'sortirDirect'])->name('sortirDirect');
         Route::post('/{id}/maj-contre-pesee', [LotWebController::class, 'majContrePesee'])->name('majContrePesee');
         Route::get('/{id}/sortir-chambre', [LotWebController::class, 'sortirChambre'])->name('sortirChambre');
@@ -63,7 +62,7 @@ Route::middleware('auth')->group(function () {   // ✅ Correction
     });
 
     Route::get('/entrees', [LotWebController::class, 'create'])->name('entrees.index');
-    Route::post('/chambres/{id}/assigner-lot', [ChambreWebController::class, 'assignerLot'])->name('chambres.assignerLot');
+
 
     // ==========================================
     // 2. TUNNELS
