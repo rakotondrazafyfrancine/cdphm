@@ -1,107 +1,151 @@
 @extends('layouts.app')
-@section('title', 'Tunnel : ' . $tunnel->nom)
+
+@section('title', 'Chambres froides')
 
 @section('content')
+<div class="container-fluid px-0">
 
-<div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(15,23,42,0.06);">
-
-    <!-- En-tête -->
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;">
-        <div style="font-size: 17px; font-weight: 600; color: #1e293b;">
-            ❄️ {{ $tunnel->nom }}
+    <!-- ==========================================
+    EN-TÊTE
+    ========================================== -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">🧊 Chambres froides</h2>
+            <p class="text-muted small">Capacité et occupation</p>
         </div>
-        <a href="{{ route('tunnels.index') }}" style="background: #f1f5f9; color: #1e293b; padding: 6px 14px; border-radius: 8px; text-decoration: none; font-size: 13px;">
-            ← Retour
-        </a>
+        <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
+            📅 {{ now()->format('d/m/Y H:i') }}
+        </span>
     </div>
 
-    <!-- 3 cartes : Taux | Poids actuel | Capacité -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px;">
-        <div style="background: #f0fdfa; border: 1px solid #0d9488; border-radius: 12px; padding: 16px; text-align: center;">
-            <div style="font-size: 22px;">📈</div>
-            <div style="font-size: 22px; font-weight: 700;">{{ $taux }}%</div>
-            <div style="font-size: 13px; color: #64748b;">Taux de remplissage</div>
-        </div>
-        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; text-align: center;">
-            <div style="font-size: 22px;">⚖️</div>
-            <div style="font-size: 22px; font-weight: 700;">{{ number_format($poidsActuel, 0, ',', ' ') }} kg</div>
-            <div style="font-size: 13px; color: #64748b;">Poids actuel</div>
-        </div>
-        <div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; text-align: center;">
-            <div style="font-size: 22px;">📏</div>
-            <div style="font-size: 22px; font-weight: 700;">{{ number_format($capaciteKg, 0, ',', ' ') }} kg</div>
-            <div style="font-size: 13px; color: #64748b;">Capacité totale</div>
-        </div>
-    </div>
-</div>
+    <!-- ==========================================
+    GRILLE DES CHAMBRES (2 colonnes)
+    ========================================== -->
+    <div class="row g-4">
 
-<div style="background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin-top: 20px; box-shadow: 0 1px 3px rgba(15,23,42,0.06);">
-    <div style="font-size: 17px; font-weight: 600; color: #1e293b; margin-bottom: 16px;">
-        📋 Lots en congélation
-        <span style="background: #e2e8f0; color: #475569; font-size: 12px; padding: 2px 10px; border-radius: 20px; margin-left: 6px;">{{ $lots->count() }}</span>
-    </div>
+        @forelse($chambres as $chambre)
+            @php
+                $poidsActuel = $chambre->lots()->where('statut', 'en_stock')->sum('poids_entree');
+                $capaciteKg = $chambre->capacite ?? 0;
+                $taux = $capaciteKg > 0 ? round(($poidsActuel / $capaciteKg) * 100, 1) : 0;
+                $couleur = $taux > 80 ? 'danger' : ($taux > 50 ? 'warning' : 'success');
+            @endphp
 
-    <a href="{{ route('entrees.index') }}" style="text-decoration: none;">
-        <div style="border: 2px dashed #0d9488; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 20px; color: #0d9488; font-weight: 600;">
-            ➕ Ajouter un lot
-        </div>
-    </a>
+            <div class="col-md-6">
+                <div class="card border-0 shadow-hover rounded-4 h-100">
+                    <div class="card-body p-4">
 
-    <div style="overflow-x: auto; border-radius: 12px; border: 1px solid #e2e8f0;">
-        <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
-            <thead>
-                <tr style="background: linear-gradient(135deg, #0d9488, #0284c7);">
-                    <th style="padding: 12px 10px; color: white; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: left;">N° Lot</th>
-                    <th style="padding: 12px 10px; color: white; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: left;">Client</th>
-                    <th style="padding: 12px 10px; color: white; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: left;">Produit</th>
-                    <th style="padding: 12px 10px; color: white; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: left;">Quantité (kg)</th>
-                    <th style="padding: 12px 10px; color: white; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: left;">Date entrée</th>
-                    <th style="padding: 12px 10px; color: white; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: left;">Depuis</th>
-                    <th style="padding: 12px 10px; color: white; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: left;">Alerte</th>
-                    <th style="padding: 12px 10px; color: white; font-weight: 600; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: center;">Impression</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($lots as $lot)
-                    @php
-                        $heures = $lot->created_at ? now()->diffInHours($lot->created_at, absolute: true) : 0;
-                        $alerte = $heures > 24;
+                        <!-- En-tête -->
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <h5 class="fw-bold text-dark mb-0">
+                                    🧊 {{ $chambre->nom }}
+                                    <span class="badge {{ $chambre->statut === 'disponible' ? 'bg-success' : ($chambre->statut === 'pleine' ? 'bg-danger' : 'bg-warning') }} rounded-pill ms-2">
+                                        {{ ucfirst($chambre->statut) }}
+                                    </span>
+                                </h5>
+                                <small class="text-muted">ID: {{ $chambre->id }}</small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-primary rounded-pill px-3 py-2">
+                                    {{ number_format($capaciteKg, 0) }} kg
+                                </span>
+                            </div>
+                        </div>
 
-                    @endphp
-                    <tr style="border-bottom: 1px solid #e2e8f0; {{ $alerte ? 'background: #fef2f2;' : '' }} transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='{{ $alerte ? '#fef2f2' : 'white' }}'">
-                        <td style="padding: 10px;"><strong>{{ $lot->numero }}</strong></td>
-                        <td style="padding: 10px;">{{ $lot->client->nom ?? '—' }}</td>
-                        <td style="padding: 10px;">{{ $lot->espece ?? '—' }}</td>
-                        <td style="padding: 10px;">{{ number_format($lot->poids_entree, 2) }}</td>
-                        <td style="padding: 10px;">{{ $lot->created_at ? $lot->created_at->format('d/m/Y') : '—' }}</td>
-                        <td style="padding: 10px;">
-                            <span style="background: #f1f5f9; color: #475569; font-size: 12px; padding: 2px 10px; border-radius: 20px;">
-                                {{ $lot->created_at ? $lot->created_at->diffForHumans() : '—' }}
-                            </span>
-                        </td>
-                        <td style="padding: 10px;">
-                            @if($alerte)
-                                <span style="background: #fee2e2; color: #b91c1c; font-weight: 600; font-size: 12px; padding: 2px 10px; border-radius: 20px;">⚠️ +24h</span>
-                            @else
-                                <span style="background: #ccfbf1; color: #0f766e; font-weight: 600; font-size: 12px; padding: 2px 10px; border-radius: 20px;">✅ OK</span>
-                            @endif
-                        </td>
-                        <td style="padding: 10px; text-align: center;">
-                            <a href="{{ route('lots.bonSortie', $lot->id) }}" style="background: #0284c7; color: white; padding: 6px 10px; border-radius: 8px; text-decoration: none; font-size: 12px; white-space: nowrap;">
-                                🖨️ Bon de sortie
+                        <!-- Barre de progression -->
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between small">
+                                <span class="text-muted">Occupation</span>
+                                <span class="fw-bold text-{{ $couleur }}">
+                                    {{ $taux }}%
+                                </span>
+                            </div>
+                            <div class="progress" style="height: 12px; border-radius: 8px;">
+                                <div class="progress-bar bg-{{ $couleur }} rounded-pill"
+                                     style="width: {{ min($taux, 100) }}%; transition: width 0.6s ease;">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Poids -->
+                        <div class="row g-2 mt-2">
+                            <div class="col-6">
+                                <div class="bg-light rounded-3 p-2 text-center">
+                                    <small class="text-muted d-block">Stocké</small>
+                                    <strong>{{ number_format($poidsActuel, 0) }} kg</strong>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="bg-light rounded-3 p-2 text-center">
+                                    <small class="text-muted d-block">Restant</small>
+                                    <strong>{{ number_format(max(0, $capaciteKg - $poidsActuel), 0) }} kg</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bouton Voir -->
+                        <div class="mt-3">
+                            <a href="{{ route('chambres.show', $chambre->id) }}" class="btn btn-outline-primary btn-sm w-100 rounded-pill">
+                                👁️ Voir les lots
                             </a>
-                        </td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="8" style="text-align: center; padding: 20px; color: #64748b;">
-                            Aucun lot en congélation.
-                        </td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            @if(($loop->index + 1) % 2 == 0 && !$loop->last)
+                <div class="w-100"></div>
+            @endif
+
+        @empty
+            <div class="col-12">
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="card-body text-center py-5">
+                        <i class="bi bi-snow2 fs-1 text-muted d-block mb-3"></i>
+                        <h5 class="text-muted">Aucune chambre froide enregistrée</h5>
+                    </div>
+                </div>
+            </div>
+        @endforelse
+
+    </div>
+
+    <!-- ==========================================
+    PIED DE PAGE
+    ========================================== -->
+    <div class="text-center text-muted small py-3 border-top mt-4">
+        🗄️ CDPHM — {{ now()->format('Y') }} · Tous droits réservés
     </div>
 </div>
 
+<!-- ==========================================
+STYLES
+========================================== -->
+<style>
+    .shadow-hover {
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .shadow-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.10) !important;
+    }
+    .card {
+        border-radius: 16px !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .progress {
+        background-color: #e9ecef;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    .progress-bar {
+        border-radius: 8px;
+        transition: width 0.6s ease;
+    }
+    .badge {
+        font-weight: 500;
+    }
+</style>
 @endsection
