@@ -24,7 +24,7 @@
         <strong>Nom :</strong> {{ $tunnel->nom }}
     </div>
     <div class="info">
-        <strong>Capacité :</strong> {{ number_format($tunnel->capacite, 0) }} kg
+        <strong>Capacité :</strong> {{ number_format($tunnel->capacite_tonnes * 1000, 0, ',', ' ') }} kg
     </div>
     <div class="info">
         <strong>Statut :</strong> {{ $tunnel->statut }}

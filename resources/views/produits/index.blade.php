@@ -10,25 +10,25 @@
     ========================================== -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold text-dark mb-0">🐟 Gestion des produits</h2>
+            <h2 class="fw-bold text-dark mb-0"><x-lucide-tag class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> Gestion des produits</h2>
             <p class="text-muted small">Ajouter et gérer les espèces disponibles</p>
         </div>
         <span class="badge bg-light text-dark border rounded-pill px-3 py-2">
-            <i class="bi bi-calendar3 me-1"></i> {{ now()->format('d/m/Y') }}
+            <x-lucide-calendar class="lu me-1" style="width:1em;height:1em;vertical-align:-.125em;" /> {{ now()->format('d/m/Y') }}
         </span>
     </div>
 
     <!-- Messages flash -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show rounded-4" role="alert">
-            <i class="bi bi-check-circle me-2"></i> {{ session('success') }}
+            <x-lucide-circle-check class="lu me-2" style="width:1em;height:1em;vertical-align:-.125em;" /> {{ session('success') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
 
     @if(session('error'))
         <div class="alert alert-danger alert-dismissible fade show rounded-4" role="alert">
-            <i class="bi bi-exclamation-triangle me-2"></i> {{ session('error') }}
+            <x-lucide-triangle-alert class="lu me-2" style="width:1em;height:1em;vertical-align:-.125em;" /> {{ session('error') }}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     @endif
@@ -38,7 +38,7 @@
     ========================================== -->
     <div class="card border-0 shadow-sm rounded-4 mb-4">
         <div class="card-header bg-white border-0 py-3">
-            <h5 class="fw-bold mb-0"><i class="bi bi-plus-circle text-primary me-2"></i> Ajouter un produit</h5>
+            <h5 class="fw-bold mb-0"><x-lucide-circle-plus class="lu text-primary me-2" style="width:1em;height:1em;vertical-align:-.125em;" /> Ajouter un produit</h5>
         </div>
         <div class="card-body">
             <form action="{{ route('produits.store') }}" method="POST" class="row g-3">
@@ -51,15 +51,15 @@
                     <label class="form-label fw-bold small">Catégorie</label>
                     <select name="categorie" class="form-control" required>
                         <option value="">-- Sélectionner --</option>
-                        <option value="poisson">🐟 Poisson</option>
-                        <option value="crevette">🦐 Crevette</option>
-                        <option value="crabe">🦀 Crabe</option>
-                        <option value="langouste">🦞 Langouste</option>
+                        <option value="poisson">Poisson</option>
+                        <option value="crevette">Crevette</option>
+                        <option value="crabe">Crabe</option>
+                        <option value="langouste">Langouste</option>
                     </select>
                 </div>
                 <div class="col-md-3 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100 rounded-pill">
-                        <i class="bi bi-plus-lg me-1"></i> Ajouter
+                        <x-lucide-plus class="lu me-1" style="width:1em;height:1em;vertical-align:-.125em;" /> Ajouter
                     </button>
                 </div>
             </form>
@@ -72,7 +72,7 @@
     <div class="card border-0 shadow-sm rounded-4">
         <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
             <h5 class="fw-bold mb-0">
-                <i class="bi bi-list-ul text-primary me-2"></i> Liste des produits
+                <x-lucide-list class="lu text-primary me-2" style="width:1em;height:1em;vertical-align:-.125em;" /> Liste des produits
                 <span class="badge bg-secondary rounded-pill ms-2">{{ $produits->count() }}</span>
             </h5>
         </div>
@@ -99,14 +99,14 @@
                                 </td>
                                 <td class="pe-4">
                                     <a href="{{ route('produits.edit', $produit->id) }}" class="btn btn-outline-warning btn-sm rounded-pill px-2" title="Modifier">
-                                        ✏️
+                                        <x-lucide-square-pen class="lu" style="width:1em;height:1em;vertical-align:-.125em;" />
                                     </a>
                                     <form action="{{ route('produits.destroy', $produit->id) }}" method="POST" class="d-inline"
                                           onsubmit="return confirm('Supprimer le produit {{ $produit->nom }} ?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-2" title="Supprimer">
-                                            🗑️
+                                            <x-lucide-trash-2 class="lu" style="width:1em;height:1em;vertical-align:-.125em;" />
                                         </button>
                                     </form>
                                 </td>
@@ -114,7 +114,7 @@
                         @empty
                             <tr>
                                 <td colspan="4" class="text-center py-5 text-muted">
-                                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                                    <x-lucide-inbox class="lu fs-1 d-block mb-2" style="width:1em;height:1em;vertical-align:-.125em;" />
                                     Aucun produit enregistré. Ajoutez-en un ci-dessus !
                                 </td>
                             </tr>
@@ -129,7 +129,7 @@
     PIED DE PAGE
     ========================================== -->
     <div class="text-center text-muted small py-4 border-top mt-4">
-        <i class="bi bi-database me-1"></i> CDPHM — {{ now()->format('Y') }} · Tous droits réservés
+        <x-lucide-database class="lu me-1" style="width:1em;height:1em;vertical-align:-.125em;" /> CDPHM — {{ now()->format('Y') }} · Tous droits réservés
     </div>
 
 </div>

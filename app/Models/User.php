@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Models\Contracts\HasName;
+use Filament\Panel;
 use Override;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser, HasName
 {
     use Notifiable;
 
@@ -15,6 +18,16 @@ class User extends Authenticatable
         'password',
         'role',
     ];
+    public function getFilamentName(): string
+    {
+        return $this->pseudo;
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return true;
+    }
+
     protected $hidden = [
         'password',
         'remember_token',

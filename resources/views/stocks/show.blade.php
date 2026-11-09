@@ -9,20 +9,20 @@
     ========================================== -->
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="fw-bold text-dark mb-0">📄 Détails du lot</h2>
+            <h2 class="fw-bold text-dark mb-0"><x-lucide-file-text class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> Détails du lot</h2>
             <p class="text-muted small">{{ $lot->numero }}</p>
         </div>
         <div>
             <a href="{{ route('stock.index') }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
-                <i class="bi bi-arrow-left me-1"></i> Retour au stock
+                <x-lucide-arrow-left class="lu me-1" style="width:1em;height:1em;vertical-align:-.125em;" /> Retour au stock
             </a>
             @if($lot->statut === 'en_stock')
-                <a href="{{ route('lot.bonSortie', $lot->id) }}" class="btn btn-success btn-sm rounded-pill px-3">
-                    <i class="bi bi-printer me-1"></i> Bon de sortie
+                <a href="{{ route('lots.formSortieChambre', $lot->id) }}" class="btn btn-success btn-sm rounded-pill px-3">
+                    <x-lucide-package-open class="lu me-1" style="width:1em;height:1em;vertical-align:-.125em;" /> Sortir le lot
                 </a>
             @else
                 <span class="badge bg-secondary rounded-pill px-3 py-2">
-                    <i class="bi bi-check-circle me-1"></i> Déjà sorti
+                    <x-lucide-circle-check class="lu me-1" style="width:1em;height:1em;vertical-align:-.125em;" /> Déjà sorti
                 </span>
             @endif
         </div>
@@ -37,7 +37,7 @@
 
                 <!-- Colonne gauche -->
                 <div class="col-md-6">
-                    <h6 class="fw-bold text-primary mb-3"><i class="bi bi-info-circle me-2"></i> Informations générales</h6>
+                    <h6 class="fw-bold text-primary mb-3"><x-lucide-info class="lu me-2" style="width:1em;height:1em;vertical-align:-.125em;" /> Informations générales</h6>
                     <table class="table table-borderless">
                         <tr>
                             <th style="width: 140px;">N° Lot</th>
@@ -70,7 +70,7 @@
 
                 <!-- Colonne droite -->
                 <div class="col-md-6">
-                    <h6 class="fw-bold text-success mb-3"><i class="bi bi-box-seam me-2"></i> Stockage</h6>
+                    <h6 class="fw-bold text-success mb-3"><x-lucide-package class="lu me-2" style="width:1em;height:1em;vertical-align:-.125em;" /> Stockage</h6>
                     <table class="table table-borderless">
                         <tr>
                             <th style="width: 140px;">Poids entrée</th>
@@ -102,9 +102,9 @@
                             <th>Statut</th>
                             <td>
                                 @if($lot->statut === 'en_stock')
-                                    <span class="badge bg-warning rounded-pill">🟡 En stock</span>
+                                    <span class="badge bg-warning rounded-pill"><x-lucide-hourglass class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> En stock</span>
                                 @else
-                                    <span class="badge bg-success rounded-pill">✅ Sorti</span>
+                                    <span class="badge bg-success rounded-pill"><x-lucide-circle-check class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> Sorti</span>
                                 @endif
                             </td>
                         </tr>
@@ -132,7 +132,7 @@
                             </div>
                             <div class="col-md-4">
                                 <div class="bg-success bg-opacity-10 rounded-3 p-3 text-center border border-success border-opacity-25">
-                                    <small class="text-muted d-block">💰 Montant facturé</small>
+                                    <small class="text-muted d-block"><x-lucide-hand-coins class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> Montant facturé</small>
                                     <strong class="fs-4 text-success">{{ number_format($montant, 0) }} Ar</strong>
                                 </div>
                             </div>
@@ -148,7 +148,7 @@
     PIED DE PAGE
     ========================================== -->
     <div class="text-center text-muted small py-3 border-top mt-4">
-        <i class="bi bi-database me-1"></i> CDPHM — {{ now()->format('Y') }} · Tous droits réservés
+        <x-lucide-database class="lu me-1" style="width:1em;height:1em;vertical-align:-.125em;" /> CDPHM — {{ now()->format('Y') }} · Tous droits réservés
     </div>
 </div>
 

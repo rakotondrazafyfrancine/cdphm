@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container">
-    <h1>➕ Ajouter un produit</h1>
+    <h1><x-lucide-plus class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> Ajouter un produit</h1>
 
     <form action="{{ route('produits.store') }}" method="POST">
         @csrf
@@ -18,14 +18,14 @@
             <label class="form-label">Catégorie *</label>
             <select name="categorie" class="form-control" required>
                 <option value="">-- Sélectionner --</option>
-                <option value="poisson">🐟 Poisson</option>
-                <option value="crevette">🦐 Crevette</option>
-                <option value="crabe">🦀 Crabe</option>
-                <option value="langouste">🦞 Langouste</option>
+                <option value="poisson">Poisson</option>
+                <option value="crevette">Crevette</option>
+                <option value="crabe">Crabe</option>
+                <option value="langouste">Langouste</option>
             </select>
         </div>
 
-        <button type="submit" class="btn btn-success">💾 Enregistrer</button>
+        <button type="submit" class="btn btn-success"><x-lucide-save class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> Enregistrer</button>
         <a href="{{ route('produits.index') }}" class="btn btn-secondary">Annuler</a>
     </form>
 </div>

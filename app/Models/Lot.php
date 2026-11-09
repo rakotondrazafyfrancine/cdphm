@@ -13,11 +13,9 @@ class Lot extends Model
     protected $fillable = [
         // Informations générales
         'client_id',
+        'entree_ref',
         'espece',
-        'categorie',
         'contact',
-        'dockers',
-        'date_entree',
 
         // Poids
         'poids_entree',
@@ -26,51 +24,35 @@ class Lot extends Model
         // Infrastructure
         'tunnel_id',
         'chambre_id',
-        'type_infrastructure',
 
         // Gestion du temps
         'heures_tunnel',
-        'duree_stockage',
         'duree_indeterminee',
 
 
         // Frais
-        'frais_transport',
-        'frais_congelation',
-        'frais_total',
 
         // Paiements
         'paye_tunnel',
         'paye_chambre',
         'montant_tunnel',
-        'penalite_tunnel',
 
         // Dates
         'date_entree_chambre',
         'date_sortie',
 
         // Autres
-        'avec_traitement',
-        'responsabilite_dep',
         'statut',
     ];
 
     protected $casts = [
         'poids_entree' => 'decimal:2',
         'poids_sortie' => 'decimal:2',
-        'frais_transport' => 'decimal:2',
-        'frais_congelation' => 'decimal:2',
-        'frais_total' => 'decimal:2',
         'montant_tunnel' => 'decimal:2',
-        'penalite_tunnel' => 'decimal:2',
-        'tarif_transport_libre' => 'decimal:2',
         'heures_tunnel' => 'float',
-        'duree_stockage' => 'float',
         'paye_tunnel' => 'boolean',
         'paye_chambre' => 'boolean',
         'duree_indeterminee' => 'boolean',
-        'avec_traitement' => 'boolean',
-        'transport_avec_go' => 'boolean',
         'date_entree_chambre' => 'datetime',
         'date_sortie' => 'datetime',
     ];
@@ -82,6 +64,16 @@ class Lot extends Model
     /**
      * Relation avec le client
      */
+    public static function tarifTunnel(): float
+    {
+        return (float) (Tarif::where('designation', 'Tunnel')->value('montant') ?? 450);
+    }
+
+    public static function tarifChambre(): float
+    {
+        return (float) (Tarif::where('designation', 'Chambre')->value('montant') ?? 25);
+    }
+
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class);
@@ -134,9 +126,9 @@ class Lot extends Model
     public function getTempsChambreEnJoursAttribute(): float
     {
         if ($this->duree_indeterminee && $this->date_entree_chambre) {
-            return now()->diffInDays($this->date_entree_chambre) + 1;
+            return (int) $this->date_entree_chambre->diffInDays(now()) + 1;
         }
-        return $this->duree_stockage ?? 1;
+        return 1;
     }
 
     /**
@@ -194,7 +186,7 @@ class Lot extends Model
             return 'Durée libre (facturation à la sortie)';
         }
 
-        $jours = $this->duree_stockage ?? 1;
+        $jours = 1;
         return $jours . ' jour(s)';
     }
 
@@ -204,14 +196,6 @@ class Lot extends Model
     public function getPoidsFinalAttribute(): float
     {
         return $this->poids_sortie ?? $this->poids_entree;
-    }
-
-    /**
-     * Obtenir le montant total des frais formaté
-     */
-    public function getMontantTotalFormateAttribute(): string
-    {
-        return number_format($this->frais_total ?? 0, 2) . ' Ar';
     }
 
     // ==========================================
@@ -231,8 +215,7 @@ class Lot extends Model
      */
     public function scopeEnTunnel($query)
     {
-        return $query->where('type_infrastructure', 'tunnel')
-            ->where('statut', 'en_stock');
+        return $query->where('statut', 'en_congelation');
     }
 
     /**
@@ -240,8 +223,7 @@ class Lot extends Model
      */
     public function scopeEnChambre($query)
     {
-        return $query->where('type_infrastructure', 'chambre')
-            ->where('statut', 'en_stock');
+        return $query->where('statut', 'en_stock');
     }
 
     /**
@@ -260,9 +242,8 @@ class Lot extends Model
      */
     public function scopeDepassementTunnel($query)
     {
-        return $query->where('type_infrastructure', 'tunnel')
-            ->where('heures_tunnel', '>', 24)
-            ->where('statut', 'en_stock');
+        return $query->where('statut', 'en_congelation')
+            ->where('heures_tunnel', '>', 24);
     }
 
     /**
@@ -279,14 +260,6 @@ class Lot extends Model
     public function scopeEntreDates($query, $debut, $fin)
     {
         return $query->whereBetween('created_at', [$debut, $fin]);
-    }
-
-    /**
-     * Scope pour les lots avec une destination de transport
-     */
-    public function scopeAvecDestination($query)
-    {
-        return $query->whereNotNull('destination');
     }
 
     /**
@@ -367,7 +340,7 @@ class Lot extends Model
     public function getJoursEnStockAttribute(): int
     {
         $date = $this->date_entree_chambre ?? $this->created_at;
-        return now()->diffInDays($date);
+        return (int) $date->diffInDays(now());
     }
 
     /**
@@ -382,14 +355,6 @@ class Lot extends Model
     }
 
     /**
-     * Vérifier si le lot a un transport associé
-     */
-    public function getATransportAttribute(): bool
-    {
-        return $this->missions()->exists();
-    }
-
-    /**
      * Obtenir le statut du paiement en texte
      */
     public function getStatutPaiementAttribute(): string
@@ -399,8 +364,30 @@ class Lot extends Model
         }
         return $this->paye_chambre ? 'Payé' : 'En attente';
     }
+    /**
+     * Il n'existe pas de colonne type_infrastructure : on le déduit de l'emplacement du lot.
+     */
+    public function getTypeInfrastructureAttribute(): ?string
+    {
+        if ($this->chambre_id) {
+            return 'chambre';
+        }
+
+        return $this->tunnel_id ? 'tunnel' : null;
+    }
+
     public function getNumeroAttribute()
     {
         return 'LOT-' . str_pad($this->id, 4, '0', STR_PAD_LEFT);
     }
+    public function sortiesChambre()
+    {
+        return $this->hasMany(SortieChambre::class);
+    }
+       public function sortiesTunnel()
+    {
+        return $this->hasMany(SortieTunnel::class);
+    }
+
+
 }

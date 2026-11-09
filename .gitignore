@@ -14,7 +14,10 @@
 /auth.json
 /node_modules
 /public/build
+/public/css/filament
+/public/fonts/filament
 /public/hot
+/public/js/filament
 /public/storage
 /storage/*.key
 /storage/pail
@@ -22,3 +25,11 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+database/sauvegardes/
+
+# sauvegardes et fichiers locaux
+.env.*
+!.env.example
+*.avant_*
+/database/migrations.zip
+/storage/framework/lsp-*

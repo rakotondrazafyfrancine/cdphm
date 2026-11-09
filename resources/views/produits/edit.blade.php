@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="container">
-    <h1>✏️ Modifier le produit</h1>
+    <h1><x-lucide-square-pen class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> Modifier le produit</h1>
 
     <form action="{{ route('produits.update', $produit->id) }}" method="POST">
         @csrf
@@ -18,14 +18,14 @@
         <div class="mb-3">
             <label class="form-label">Catégorie *</label>
             <select name="categorie" class="form-control" required>
-                <option value="poisson" {{ $produit->categorie == 'poisson' ? 'selected' : '' }}>🐟 Poisson</option>
-                <option value="crevette" {{ $produit->categorie == 'crevette' ? 'selected' : '' }}>🦐 Crevette</option>
-                <option value="crabe" {{ $produit->categorie == 'crabe' ? 'selected' : '' }}>🦀 Crabe</option>
-                <option value="langouste" {{ $produit->categorie == 'langouste' ? 'selected' : '' }}>🦞 Langouste</option>
+                <option value="poisson" {{ $produit->categorie == 'poisson' ? 'selected' : '' }}>Poisson</option>
+                <option value="crevette" {{ $produit->categorie == 'crevette' ? 'selected' : '' }}>Crevette</option>
+                <option value="crabe" {{ $produit->categorie == 'crabe' ? 'selected' : '' }}>Crabe</option>
+                <option value="langouste" {{ $produit->categorie == 'langouste' ? 'selected' : '' }}>Langouste</option>
             </select>
         </div>
 
-        <button type="submit" class="btn btn-success">💾 Mettre à jour</button>
+        <button type="submit" class="btn btn-success"><x-lucide-save class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> Mettre à jour</button>
         <a href="{{ route('produits.index') }}" class="btn btn-secondary">Annuler</a>
     </form>
 </div>

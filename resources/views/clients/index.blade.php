@@ -1,160 +1,59 @@
 @extends('layouts.app')
 
-@section('title', 'Gestion des clients')
+@section('title', 'Clients')
 
 @section('content')
-<div class="container-fluid px-0">
+@php
+    $btn = 'display:inline-block;box-sizing:border-box;min-width:84px;height:32px;line-height:30px;padding:0 12px;border:1px solid #cbd5e1;border-radius:4px;color:#000;font-size:13px;font-weight:600;text-align:center;text-decoration:none;cursor:pointer;background:#f1f5f9;';
+    $th  = 'background:#1a3a5c;color:#fff;padding:10px 16px;font-size:12px;font-weight:600;text-transform:uppercase;';
+@endphp
 
-    <!-- ==========================================
-    EN-TÊTE
-    ========================================== -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold text-dark mb-0">👤 Gestion des clients</h2>
-            <p class="text-muted small">Liste des collecteurs et clients</p>
-        </div>
-        <div class="d-flex gap-2">
-            <a href="{{ route('clients.create') }}" class="btn btn-primary rounded-pill px-4">
-                ➕ Nouveau client
-            </a>
-        </div>
+<div class="d-flex justify-content-between align-items-center mb-3" style="color:#000;">
+    <div>
+        <h5 class="fw-semibold mb-0">Liste des clients</h5>
+        <small>{{ $clients->count() }} client(s) enregistré(s)</small>
     </div>
-
-    <!-- ==========================================
-    MESSAGES FLASH
-    ========================================== -->
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show rounded-4" role="alert">
-            ✅ {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-    @if(session('error'))
-        <div class="alert alert-danger alert-dismissible fade show rounded-4" role="alert">
-            ❌ {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
-
-    <!-- ==========================================
-    TABLEAU
-    ========================================== -->
-    <div class="card border-0 shadow-sm rounded-4">
-        <div class="card-header bg-white border-0 py-3 d-flex justify-content-between align-items-center">
-            <h5 class="fw-bold mb-0">
-                📋 Liste des clients
-                <span class="badge bg-secondary rounded-pill ms-2">{{ $clients->count() }}</span>
-            </h5>
-            <input type="text" id="search-client" class="form-control form-control-sm rounded-pill" style="width: 200px;" placeholder="🔍 Rechercher...">
-        </div>
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0 table-modern" id="table-clients">
-                    <thead>
-                        <tr>
-                            <th class="ps-3 py-3">🆔 ID</th>
-                            <th class="py-3">👤 Nom</th>
-                            <th class="py-3">📞 Contact</th>
-                            <th class="py-3">📍 Adresse</th>
-                            <th class="py-3">📂 Type</th>
-                            <th class="py-3">📦 Lots</th>
-                            <th class="text-end pe-3 py-3">⚡ Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($clients as $client)
-                            <tr>
-                                <td class="ps-3"><span class="fw-bold text-primary">#{{ $client->id }}</span></td>
-                                <td><strong>{{ $client->nom }}</strong></td>
-                                <td>{{ $client->contact ?? 'N/A' }}</td>
-                                <td>{{ $client->adresse ?? 'N/A' }}</td>
-                                <td>
-                                    <span class="badge bg-secondary rounded-pill">{{ $client->type ?? 'Particulier' }}</span>
-                                </td>
-                                <td>
-                                    <span class="badge bg-info rounded-pill">{{ $client->lots()->count() }}</span>
-                                </td>
-                                <td class="text-end pe-3">
-                                    <a href="{{ route('clients.edit', $client->id) }}" class="btn btn-outline-warning btn-sm rounded-pill px-2" title="Modifier">
-                                        ✏️
-                                    </a>
-                                    <form action="{{ route('clients.destroy', $client->id) }}" method="POST" class="d-inline"
-                                          onsubmit="return confirm('Supprimer définitivement {{ $client->nom }} ?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-2" title="Supprimer">
-                                            🗑️
-                                        </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center py-4 text-muted">
-                                    📭 Aucun client enregistré.
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==========================================
-    PIED DE PAGE
-    ========================================== -->
-    <div class="text-center text-muted small py-3 border-top mt-4">
-        🗄️ CDPHM — {{ now()->format('Y') }} · Tous droits réservés
-    </div>
+    <a href="{{ route('clients.create') }}" class="btn btn-sm text-white px-3" style="background:#1a3a5c;border-radius:4px;">+ Nouveau client</a>
 </div>
 
-<!-- ==========================================
-STYLES
-========================================== -->
-<style>
-    .table-modern {
-        background: #fff;
-        border-radius: 16px;
-        overflow: hidden;
-    }
-    .table-modern thead th {
-        background: #f8f9fa;
-        border-bottom: 2px solid #dee2e6;
-        font-size: 0.7rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: #6c757d;
-        font-weight: 700;
-        padding: 0.75rem 0.5rem;
-    }
-    .table-modern tbody td {
-        padding: 0.6rem 0.5rem;
-        border-bottom: 1px solid #f1f3f5;
-        vertical-align: middle;
-    }
-    .table-modern tbody tr:hover {
-        background-color: rgba(13, 110, 253, 0.03);
-    }
-    .table-modern tbody tr:last-child td {
-        border-bottom: none;
-    }
-    .btn {
-        border-radius: 30px !important;
-    }
-    .card {
-        border-radius: 16px !important;
-    }
-</style>
-
-<script>
-    document.getElementById('search-client').addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
-        const rows = document.querySelectorAll('#table-clients tbody tr');
-        rows.forEach(row => {
-            const text = row.textContent.toLowerCase();
-            row.style.display = text.includes(query) ? '' : 'none';
-        });
-    });
-</script>
+<div class="card border-0" style="border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.08);">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" style="color:#000;">
+            <thead>
+                <tr>
+                    <th style="{{ $th }}">N°</th>
+                    <th style="{{ $th }}">Nom / Coopérative</th>
+                    <th style="{{ $th }}">Numéro</th>
+                    <th style="{{ $th }}">Produits</th>
+                    <th style="{{ $th }}">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($clients as $client)
+                    <tr>
+                        <td class="px-3 fw-semibold" style="vertical-align:middle;">{{ sprintf('CL-%03d', $client->id) }}</td>
+                        <td style="vertical-align:middle;">{{ $client->nom }}</td>
+                        <td style="vertical-align:middle;">{{ $client->contact ?? '—' }}</td>
+                        <td style="vertical-align:middle;">{{ $client->produits->pluck('nom')->implode(', ') ?: '—' }}</td>
+                        <td style="vertical-align:middle;">
+                            <div style="display:flex;align-items:center;gap:8px;">
+                                {{-- <a href="{{ route('clients.show', $client->id) }}" style="{{ $btn }}">Voir</a> --}}
+                                <a href="{{ route('clients.edit', $client->id) }}" style="{{ $btn }}">Modifier</a>
+                                <form method="POST" action="{{ route('clients.destroy', $client->id) }}" style="margin:0;" onsubmit="return confirm('Supprimer ce client ?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" style="{{ $btn }}">Supprimer</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="5" class="text-center py-4">Aucun client enregistré.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 @endsection

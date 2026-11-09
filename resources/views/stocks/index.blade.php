@@ -9,7 +9,7 @@
     BARRE DE RECHERCHE
     ========================================== -->
     <div class="mb-3">
-        <input type="text" id="search-stock" class="form-control form-control-sm rounded-pill" style="max-width: 350px;" placeholder="🔍 Rechercher un lot, client, produit...">
+        <input type="text" id="search-stock" class="form-control form-control-sm rounded-pill" style="max-width: 350px;" placeholder="Rechercher un lot, client, produit...">
     </div>
 
     <!-- ==========================================
@@ -23,14 +23,17 @@
                     <th style="background: #0d9488 !important; background-image: linear-gradient(135deg, #0d9488, #0284c7) !important; color: #ffffff !important; font-weight: 600 !important; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: left; padding: 12px 10px;">Client</th>
                     <th style="background: #0d9488 !important; background-image: linear-gradient(135deg, #0d9488, #0284c7) !important; color: #ffffff !important; font-weight: 600 !important; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: left; padding: 12px 10px;">Produit</th>
                     <th style="background: #0d9488 !important; background-image: linear-gradient(135deg, #0d9488, #0284c7) !important; color: #ffffff !important; font-weight: 600 !important; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: left; padding: 12px 10px;">Poids (kg)</th>
-                    <th style="background: #0d9488 !important; background-image: linear-gradient(135deg, #0d9488, #0284c7) !important; color: #ffffff !important; font-weight: 600 !important; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: left; padding: 12px 10px;">Contre-pesée</th>
+                    <th style="background: #0d9488 !important; background-image: linear-gradient(135deg, #0d9488, #0284c7) !important; color: #ffffff !important; font-weight: 600 !important; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: left; padding: 12px 10px;">Poids restant</th>
                     <th style="background: #0d9488 !important; background-image: linear-gradient(135deg, #0d9488, #0284c7) !important; color: #ffffff !important; font-weight: 600 !important; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: left; padding: 12px 10px;">Chambre</th>
                     <th style="background: #0d9488 !important; background-image: linear-gradient(135deg, #0d9488, #0284c7) !important; color: #ffffff !important; font-weight: 600 !important; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: left; padding: 12px 10px;">Entrée chambre</th>
-                    <th style="background: #0d9488 !important; background-image: linear-gradient(135deg, #0d9488, #0284c7) !important; color: #ffffff !important; font-weight: 600 !important; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: center; padding: 12px 10px;">Impression</th>
+                    <th style="background: #0d9488 !important; background-image: linear-gradient(135deg, #0d9488, #0284c7) !important; color: #ffffff !important; font-weight: 600 !important; text-transform: uppercase; font-size: 11px; letter-spacing: 0.04em; text-align: center; padding: 12px 10px;">Action</th>
                 </tr>
             </thead>
             <tbody>
                 @forelse($lots as $lot)
+                    @php
+                        $sortieAConfirmer = $lot->sortiesChambre->firstWhere('statut', 'paye');
+                    @endphp
                     <tr style="border-bottom: 1px solid #e2e8f0; transition: background 0.15s ease;" onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background='white'">
                         <td style="padding: 10px;"><strong style="color: #0f766e;">{{ $lot->numero }}</strong></td>
                         <td style="padding: 10px;">{{ $lot->client->nom ?? '—' }}</td>
@@ -38,7 +41,7 @@
                         <td style="padding: 10px;">{{ number_format($lot->poids_entree, 2) }}</td>
                         <td style="padding: 10px;">
                             <span style="background: #ccfbf1; color: #0f766e; font-size: 12px; padding: 3px 10px; border-radius: 20px; font-weight: 600;">
-                                {{ number_format($lot->poids_sortie ?? $lot->poids_entree, 2) }} kg
+                                {{ number_format($lot->poids_restant ?? $lot->poids_entree, 2) }} kg restants
                             </span>
                         </td>
                         <td style="padding: 10px;">
@@ -52,15 +55,21 @@
                             </span>
                         </td>
                         <td style="padding: 10px; text-align: center;">
-                            <a href="{{ route('lots.sortirChambre', $lot->id) }}" onclick="return confirm('Confirmer la sortie de ce lot ?');" style="background: #0d9488; color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: 600; white-space: nowrap;">
-                                🖨️ Bon de sortie
-                            </a>
+                            @if($sortieAConfirmer)
+                                <a href="{{ route('sortiesChambre.confirmer', $sortieAConfirmer->id) }}" style="background: #16a34a; color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: 600; white-space: nowrap;">
+                                    <x-lucide-package-open class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> Confirmer sortie
+                                </a>
+                            @else
+                                <a href="{{ route('lots.formSortieChambre', $lot->id) }}" style="background: #0d9488; color: white; padding: 6px 12px; border-radius: 8px; text-decoration: none; font-size: 12px; font-weight: 600; white-space: nowrap;">
+                                    <x-lucide-package-open class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> Sortir
+                                </a>
+                            @endif
                         </td>
                     </tr>
                 @empty
                     <tr>
                         <td colspan="8" style="text-align: center; padding: 40px; color: #94a3b8;">
-                            📭 Aucun lot en stock.
+                            <x-lucide-inbox class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> Aucun lot en stock.
                         </td>
                     </tr>
                 @endforelse

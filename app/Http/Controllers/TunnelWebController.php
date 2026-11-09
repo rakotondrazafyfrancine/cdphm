@@ -28,8 +28,6 @@ class TunnelWebController extends Controller
             ->latest()
             ->get();
 
-
-
         return view('tunnels.index', compact('tunnels', 'tousLesLots'));
     }
 
@@ -43,7 +41,7 @@ class TunnelWebController extends Controller
         // Recupere tous les lots dans le tunnel
         $lots = Lot::where('tunnel_id', $id)
             ->where('statut', 'en_congelation')
-             ->with(['client'])
+             ->with(['client', 'sortiesTunnel'])
              ->orderBy('id', 'desc')
              ->get();
 
@@ -53,33 +51,6 @@ class TunnelWebController extends Controller
         $taux = $capaciteKg > 0 ? round(($poidsActuel/ $capaciteKg) * 100, 1) : 0;
 
         return view('tunnels.show', compact('tunnel', 'lots', 'poidsActuel', 'capaciteKg', 'taux'));
-    }
-
-    /**
-     * Affiche le formulaire de modification d'un tunnel.
-     */
-    public function edit($id)
-    {
-        $tunnel = Tunnel::findOrFail($id);
-        return view('tunnels.edit', compact('tunnel'));
-    }
-
-    /**
-     * Met à jour un tunnel existant.
-     */
-    public function update(Request $request, $id)
-    {
-        $validated = $request->validate([
-            'nom'      => 'required|string|max:255',
-            'capacite' => 'required|numeric|min:0',
-            'statut'   => 'required|in:disponible,occupe,maintenance'
-        ]);
-
-        $tunnel = Tunnel::findOrFail($id);
-        $tunnel->update($validated);
-
-        return redirect()->route('tunnels.index')
-            ->with('success', 'Tunnel mis à jour avec succès.');
     }
 
     /**

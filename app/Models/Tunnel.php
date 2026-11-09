@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Tunnel extends Model
 {
-    protected $fillable = ['nom', 'capacite', 'statut'];
+    protected $fillable = ['nom', 'capacite_tonnes'];
 
     public function lots()
     {

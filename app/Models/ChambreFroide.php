@@ -12,16 +12,14 @@ class ChambreFroide extends Model
      */
     protected $fillable = [
         'nom',
-        'capacite',
-        'statut',        // disponible, pleine, maintenance
-        'description'
+        'capacite_tonnes',
     ];
 
     /**
      * Les attributs qui doivent être castés.
      */
     protected $casts = [
-        'capacite' => 'decimal:2',
+        'capacite_tonnes' => 'decimal:2',
     ];
 
     /**
@@ -33,11 +31,22 @@ class ChambreFroide extends Model
     }
 
     /**
-     * Vérifier si la chambre est disponible.
+     * Poids réellement stocké (kg) : poids restant, sorties partielles déduites.
      */
-    public function getEstDisponibleAttribute(): bool
+    public function getPoidsStockeAttribute(): float
     {
-        return $this->statut === 'disponible';
+        return (float) $this->lots()
+            ->where('statut', 'en_stock')
+            ->get()
+            ->sum(fn($lot) => $lot->poids_restant ?? $lot->poids_entree);
+    }
+
+    /**
+     * Capacité de la chambre en kg (capacite_tonnes si présente, sinon capacite).
+     */
+    public function getCapaciteKgAttribute(): float
+    {
+        return (float) ($this->attributes['capacite_tonnes'] ?? 0) * 1000;
     }
 
     /**
@@ -45,26 +54,13 @@ class ChambreFroide extends Model
      */
     public function getTauxOccupationAttribute(): float
     {
-        $poidsStocke = $this->lots()->where('statut', 'en_stock')->sum('poids_entree');
-        if ($this->capacite > 0) {
-            return round(($poidsStocke / $this->capacite) * 100, 2);
+        $capaciteKg = $this->capacite_kg;
+
+        if ($capaciteKg > 0) {
+            return round(($this->poids_stocke / $capaciteKg) * 100, 2);
         }
+
         return 0;
     }
 
-    /**
-     * Scope : Chambres disponibles.
-     */
-    public function scopeDisponible($query)
-    {
-        return $query->where('statut', 'disponible');
-    }
-
-    /**
-     * Scope : Chambres avec capacité restante.
-     */
-    public function scopeAvecCapacite($query, $poidsRequis)
-    {
-        return $query->where('capacite', '>=', $poidsRequis);
-    }
 }

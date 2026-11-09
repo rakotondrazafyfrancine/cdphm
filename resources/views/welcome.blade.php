@@ -183,33 +183,33 @@
 </head>
 <body>
 
-    <div class="flocon f1">❄️</div>
-    <div class="flocon f2">❄️</div>
-    <div class="flocon f3">❄️</div>
-    <div class="flocon f4">❄️</div>
+    <div class="flocon f1"><x-lucide-snowflake class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /></div>
+    <div class="flocon f2"><x-lucide-snowflake class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /></div>
+    <div class="flocon f3"><x-lucide-snowflake class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /></div>
+    <div class="flocon f4"><x-lucide-snowflake class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /></div>
 
     <div class="contenu">
 
-        <div class="logo-badge">❄️</div>
+        <div class="logo-badge"><x-lucide-snowflake class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /></div>
         <div class="titre">CDPHM</div>
         <div class="sous-titre">Centre de Distribution des Produits Halieutiques de Mahajanga</div>
 
         <!-- ===== CARTES DE FONCTIONNALITÉS ===== -->
         <div class="fonctionnalites">
             <div class="carte">
-                <div class="carte-icone">🌡️</div>
+                <div class="carte-icone"><x-lucide-thermometer class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /></div>
                 <div class="carte-label">Congélation<br>Tunnels</div>
             </div>
             <div class="carte">
-                <div class="carte-icone">🧊</div>
+                <div class="carte-icone"><x-lucide-thermometer-snowflake class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /></div>
                 <div class="carte-label">Chambres<br>Froides</div>
             </div>
             <div class="carte">
-                <div class="carte-icone">📦</div>
+                <div class="carte-icone"><x-lucide-package class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /></div>
                 <div class="carte-label">Suivi<br>Stock</div>
             </div>
             <div class="carte">
-                <div class="carte-icone">💰</div>
+                <div class="carte-icone"><x-lucide-hand-coins class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /></div>
                 <div class="carte-label">Facturation<br>Client</div>
             </div>
         </div>
@@ -219,7 +219,7 @@
         </div>
 
         <a href="{{ route('login') }}" class="btn-connexion">
-            🔐 Entrée
+            <x-lucide-shield-check class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> Entrée
         </a>
 
         <div class="footer">
