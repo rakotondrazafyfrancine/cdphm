@@ -461,16 +461,13 @@ html.dark .fi-simple-main input { color: #e6f4ff !important; }
 /* ===== Identité visuelle CDPHM : menu bleu marine, contenu clair, cartes à fin contour (style sobre) ===== */
 html:not(.dark) .fi-body { background: #f3f5f8 !important; }
 
-/* menu de gauche */
-html:not(.dark) .fi-sidebar { background: #12304f !important; border-right: 0 !important; }
-html:not(.dark) .fi-sidebar-nav { background: #12304f !important; }
-html:not(.dark) .fi-sidebar-item-label, html:not(.dark) .fi-sidebar-item-btn { color: #c9d6e4 !important; }
-html:not(.dark) .fi-sidebar-item-icon, html:not(.dark) .fi-sidebar-item-btn svg { color: #9fb3c8 !important; }
-html:not(.dark) .fi-sidebar-item:not(.fi-active) > .fi-sidebar-item-btn:hover { background: #1b4068 !important; }
-html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn { background: #1f4a77 !important; box-shadow: inset 3px 0 0 #7fb2e5; border-radius: .375rem; }
-html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn, html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn * { color: #ffffff !important; }
-html:not(.dark) .fi-sidebar-group-label { color: #8fa6bf !important; text-transform: uppercase; font-size: .68rem; letter-spacing: .06em; }
-html:not(.dark) .fi-sidebar-group-btn svg, html:not(.dark) .fi-sidebar-group-collapse-btn { color: #8fa6bf !important; }
+/* menu de gauche : clair en mode clair (sombre en mode sombre, voir plus bas) */
+html:not(.dark) .fi-sidebar { background: #ffffff !important; border-right: 1px solid #d9dee5 !important; }
+html:not(.dark) .fi-sidebar-nav { background: #ffffff !important; }
+html:not(.dark) .fi-sidebar-item-label, html:not(.dark) .fi-sidebar-item-btn { color: #3b4a5e !important; }
+html:not(.dark) .fi-sidebar-item-icon, html:not(.dark) .fi-sidebar-item-btn svg { color: #6b7c93 !important; }
+html:not(.dark) .fi-sidebar-group-label { color: #7a8aa0 !important; text-transform: uppercase; font-size: .68rem; letter-spacing: .06em; }
+html:not(.dark) .fi-sidebar-group-btn svg, html:not(.dark) .fi-sidebar-group-collapse-btn { color: #7a8aa0 !important; }
 
 /* barre du haut */
 html:not(.dark) .fi-topbar > nav { background: #ffffff !important; border-bottom: 1px solid #d9dee5 !important; box-shadow: none !important; }
@@ -483,14 +480,14 @@ html:not(.dark) .fi-section, html:not(.dark) .fi-ta-ctn, html:not(.dark) .fi-wi-
 html:not(.dark) .fi-ta-header-cell { background: #eef2f6 !important; color: #334155 !important; }
 html:not(.dark) .fi-ta-row:hover { background: #f6f8fb; }
 .fi-btn, .fi-input-wrp, .fi-dropdown-panel, .fi-modal-window { border-radius: .375rem !important; }
-html:not(.dark) .fi-sidebar svg { color: #9fb3c8 !important; }
-html:not(.dark) .fi-sidebar .fi-sidebar-item.fi-active svg { color: #ffffff !important; }
+html:not(.dark) .fi-sidebar svg { color: #6b7c93 !important; }
+html:not(.dark) .fi-sidebar .fi-sidebar-item.fi-active svg { color: #12304f !important; }
 
 /* menu de gauche : pas de carte, juste du texte ; l'élément actif est en gras et blanc */
 html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn,
 html:not(.dark) .fi-sidebar-item:not(.fi-active) > .fi-sidebar-item-btn:hover { background: transparent !important; box-shadow: none !important; border-radius: 0 !important; }
-html:not(.dark) .fi-sidebar-item:not(.fi-active) > .fi-sidebar-item-btn:hover, html:not(.dark) .fi-sidebar-item:not(.fi-active) > .fi-sidebar-item-btn:hover * { color: #ffffff !important; }
-html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn, html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn * { font-weight: 600; }
+html:not(.dark) .fi-sidebar-item:not(.fi-active) > .fi-sidebar-item-btn:hover, html:not(.dark) .fi-sidebar-item:not(.fi-active) > .fi-sidebar-item-btn:hover * { color: #12304f !important; }
+html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn, html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn * { font-weight: 600; color: #12304f !important; }
 .dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn, .dark .fi-sidebar-item:not(.fi-active) > .fi-sidebar-item-btn:hover { background: transparent !important; box-shadow: none !important; border-radius: 0 !important; }
 .dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn, .dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn * { font-weight: 600; color: #ffffff !important; }
 .fi-sidebar-item-label { text-overflow: clip !important; }
