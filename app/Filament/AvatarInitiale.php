@@ -11,7 +11,11 @@ class AvatarInitiale implements AvatarProvider
 {
     public function get(Model|Authenticatable $record): string
     {
-        $initiale = mb_strtoupper(mb_substr((string) ($record->pseudo ?? '?'), 0, 1));
+        if (method_exists($record, 'photoUrl') && ($photo = $record->photoUrl())) {
+            return $photo;
+        }
+
+        $initiale = mb_strtoupper(mb_substr((string) ($record->prenom ?: $record->pseudo ?: '?'), 0, 1));
 
         $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
             . '<rect width="64" height="64" fill="#336399"/>'

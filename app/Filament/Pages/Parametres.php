@@ -13,7 +13,10 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Schemas\Components\EmbeddedSchema;
 use Filament\Schemas\Components\Form;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Hash;
@@ -55,47 +58,66 @@ class Parametres extends Page
     {
         return $schema
             ->components([
-                Section::make('Identité')
-                    ->icon('lucide-image')
-                    ->schema([
-                        TextInput::make('nom')->label('Nom affiché')->required()->maxLength(60),
-                        TextInput::make('contact')->label('Contact')->tel()->prefixIcon('lucide-phone')->maxLength(60),
-                        TextInput::make('lieu')->label('Lieu')->prefixIcon('lucide-map-pin')->maxLength(120),
-                        FileUpload::make('logo')
-                            ->label('Logo')
-                            ->image()
-                            ->imageEditor()
-                            ->disk('public')
-                            ->directory('logos')
-                            ->visibility('public')
-                            ->maxSize(2048),
-                    ]),
+                Grid::make(['default' => 1, 'lg' => 3])->schema([
+                    // à gauche : le logo et le résumé de l'établissement
+                    Section::make()
+                        ->extraAttributes(['class' => 'cd-profil-section cd-logo-section'])
+                        ->columnSpan(['lg' => 1])
+                        ->schema([
+                            FileUpload::make('logo')
+                                ->hiddenLabel()->placeholder(new \Illuminate\Support\HtmlString('&nbsp;'))
+                                ->image()
+                                ->imageEditor()
+                                ->imagePreviewHeight('140')
+                                ->disk('public')
+                                ->directory('logos')
+                                ->visibility('public')
+                                ->maxSize(2048)
+                                ->helperText('Clique sur le logo pour le changer.'),
+                            View::make('filament.pages.carte-parametres'),
+                        ]),
 
-                Section::make('Mot de passe')
-                    ->icon('lucide-lock-keyhole')
-                    ->columns(3)
-                    ->schema([
-                        TextInput::make('current_password')
-                            ->label('Mot de passe actuel')
-                            ->password()->revealable()
-                            ->autocomplete('current-password')
-                            ->required(fn (Get $get) => filled($get('password')))
-                            ->dehydrated(false),
-                        TextInput::make('password')
-                            ->label('Nouveau mot de passe')
-                            ->password()->revealable()
-                            ->autocomplete('new-password')
-                            ->minLength(6)
-                            ->same('password_confirmation')
-                            ->live(debounce: 500)
-                            ->dehydrated(false),
-                        TextInput::make('password_confirmation')
-                            ->label('Confirmer le mot de passe')
-                            ->password()->revealable()
-                            ->autocomplete('new-password')
-                            ->required(fn (Get $get) => filled($get('password')))
-                            ->dehydrated(false),
-                    ]),
+                    // à droite : les réglages
+                    Group::make([
+                        Section::make('Identité')
+                            ->description('Ces informations apparaissent dans l’en-tête et sur les documents.')
+                            ->icon('lucide-building-2')
+                            ->columns(2)
+                            ->schema([
+                                TextInput::make('nom')->label('Nom affiché')->required()->maxLength(60)->columnSpanFull(),
+                                TextInput::make('contact')->label('Contact')->tel()->prefixIcon('lucide-phone')->maxLength(60),
+                                TextInput::make('lieu')->label('Lieu')->prefixIcon('lucide-map-pin')->maxLength(120),
+                            ]),
+
+                        Section::make('Mot de passe')
+                            ->description('Laisse ces champs vides pour garder le mot de passe actuel.')
+                            ->icon('lucide-lock-keyhole')
+                            ->columns(2)
+                            ->schema([
+                                TextInput::make('current_password')
+                                    ->label('Mot de passe actuel')
+                                    ->password()->revealable()
+                                    ->autocomplete('current-password')
+                                    ->required(fn (Get $get) => filled($get('password')))
+                                    ->dehydrated(false)
+                                    ->columnSpanFull(),
+                                TextInput::make('password')
+                                    ->label('Nouveau mot de passe')
+                                    ->password()->revealable()
+                                    ->autocomplete('new-password')
+                                    ->minLength(6)
+                                    ->same('password_confirmation')
+                                    ->live(debounce: 500)
+                                    ->dehydrated(false),
+                                TextInput::make('password_confirmation')
+                                    ->label('Confirmer le mot de passe')
+                                    ->password()->revealable()
+                                    ->autocomplete('new-password')
+                                    ->required(fn (Get $get) => filled($get('password')))
+                                    ->dehydrated(false),
+                            ]),
+                    ])->columnSpan(['lg' => 2]),
+                ]),
             ]);
     }
 

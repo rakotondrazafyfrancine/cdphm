@@ -371,7 +371,7 @@ html.dark .fi-simple-main input { color: #e6f4ff !important; }
 
 /* carte du profil dans le menu déroulant */
 .cd-pc { display: flex; align-items: center; gap: .75rem; padding: .25rem 0; }
-.cd-pc-avatar { display: inline-flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; border-radius: 999px; background: #336399; color: #fff; font-weight: 700; font-size: 1.1rem; flex: none; }
+.cd-pc-avatar { object-fit: cover; display: inline-flex; align-items: center; justify-content: center; width: 2.75rem; height: 2.75rem; border-radius: 999px; background: #336399; color: #fff; font-weight: 700; font-size: 1.1rem; flex: none; }
 .cd-pc-textes { display: flex; flex-direction: column; line-height: 1.25; text-align: start; }
 .cd-pc-textes b { font-size: .95rem; color: var(--cd-ink); }
 .cd-pc-textes small { font-size: .75rem; color: #747678; text-transform: capitalize; }
@@ -515,3 +515,81 @@ html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn, html:not(.dar
 .cd-carte-bloc > .cd-carte-lien { flex: 1; }
 .cd-bouton-demarrer { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; width: 100%; padding: .55rem .75rem; border-radius: .375rem; background: #336399; color: #fff; font-weight: 600; font-size: .85rem; cursor: pointer; }
 .cd-bouton-demarrer:hover { background: #2b5282; }
+
+/* nom et rôle à côté de la flèche du menu du compte */
+.cd-entete-profil { flex-direction: row !important; align-items: center; }
+.cd-entete-profil .cd-role { color: #6b7280 !important; font-weight: 500; text-transform: capitalize; }
+.cd-pc-textes small { color: #6b7280; }
+
+/* zone cliquable du menu du compte : avatar + nom + rôle, le menu s ouvre sous cet ensemble */
+.fi-user-menu .fi-dropdown-trigger { display: flex; align-items: center; gap: .6rem; cursor: pointer; }
+.fi-user-menu .cd-entete-profil { display: inline-flex !important; order: 0; }
+@media (max-width: 899px) { .fi-user-menu .cd-entete-profil { display: none !important; } }
+
+/* menu du compte : assez large pour le nom complet */
+.fi-dropdown-panel:has(.cd-pc) { min-width: 17rem; width: max-content; max-width: 22rem; }
+.fi-dropdown-header:has(.cd-pc) { white-space: normal; }
+.fi-dropdown-header:has(.cd-pc) .cd-pc-textes b { white-space: nowrap; overflow: visible; text-overflow: clip; }
+
+/* carte de profil (page « Mon profil ») : grande photo, nom, rôle et renseignements */
+.cd-profil-carte { background: #fff; border: 1px solid #dde2e8; border-radius: .5rem; padding: 1.75rem 1.5rem; text-align: center; height: 100%; }
+.cd-profil-photo { width: 9rem; height: 9rem; margin: 0 auto 1rem; border-radius: 999px; overflow: hidden; background: #336399; display: flex; align-items: center; justify-content: center; border: 4px solid #eef2f6; }
+.cd-profil-photo img { width: 100%; height: 100%; object-fit: cover; }
+.cd-profil-photo span { color: #fff; font-size: 3.5rem; font-weight: 700; }
+.cd-profil-nom { font-size: 1.2rem; font-weight: 700; color: #0f2742; }
+.cd-profil-role { display: inline-block; margin-top: .35rem; padding: .15rem .75rem; border-radius: 999px; background: #e8eef5; color: #1f4d80; font-size: .8rem; font-weight: 600; }
+.cd-profil-infos { margin-top: 1.5rem; text-align: start; border-top: 1px solid #eef1f5; }
+.cd-profil-infos > div { display: flex; justify-content: space-between; gap: 1rem; padding: .7rem 0; border-bottom: 1px solid #eef1f5; font-size: .875rem; }
+.cd-profil-infos dt { display: flex; align-items: center; gap: .45rem; color: #6b7280; }
+.cd-profil-infos dd { color: #0f2742; font-weight: 600; text-align: end; }
+.dark .cd-profil-carte { background: #1c1d1f; border-color: #303235; }
+.dark .cd-profil-photo { border-color: #303235; }
+.dark .cd-profil-nom, .dark .cd-profil-infos dd { color: #e5e7eb; }
+.dark .cd-profil-role { background: #232a35; color: #cfe0f3; }
+.dark .cd-profil-infos, .dark .cd-profil-infos > div { border-color: #303235; }
+
+/* avatar + nom + rôle + flèche réunis en un seul bloc */
+.fi-user-menu .fi-dropdown-trigger { gap: .65rem; padding: .3rem .75rem .3rem .35rem; border: 1px solid #dde2e8; border-radius: .6rem; background: #fff; transition: background .15s, border-color .15s; }
+.fi-user-menu .fi-dropdown-trigger:hover { background: #f3f5f8; border-color: #c7d0db; }
+.fi-user-menu .fi-user-menu-trigger:hover { transform: none; }
+.fi-user-menu .cd-entete-profil { padding: 0 !important; background: none !important; border-radius: 0; }
+.fi-user-menu .cd-entete-profil:hover { background: none !important; }
+.dark .fi-user-menu .fi-dropdown-trigger { background: #1c1d1f; border-color: #303235; }
+.dark .fi-user-menu .fi-dropdown-trigger:hover { background: #252729; }
+/* bloc du compte sans contour */
+.fi-user-menu .fi-dropdown-trigger, .dark .fi-user-menu .fi-dropdown-trigger { border: 0; }
+
+/* photo téléversable au sommet de la carte de profil */
+.cd-profil-carte { border: 0; padding: 0; background: none; height: auto; }
+.cd-profil-section .fi-fo-file-upload { display: flex; flex-direction: column; align-items: center; }
+.cd-profil-section .filepond--root { margin-inline: auto; }
+.cd-profil-section .fi-fo-field-wrp-hint, .cd-profil-section .fi-fo-field-wrp-helper-text { text-align: center; }
+.cd-profil-section .cd-profil-nom { margin-top: .5rem; }
+.cd-profil-section .fi-fo-field, .cd-profil-section .fi-fo-field-wrp, .cd-profil-section .fi-fo-field-content-col, .cd-profil-section .fi-input-wrp-content-ctn { display: flex; flex-direction: column; align-items: center; text-align: center; width: 100%; }
+.cd-profil-section .filepond--root, .cd-profil-section .fi-fo-file-upload > div { margin-inline: auto !important; }
+.cd-profil-section .fi-fo-field-wrp-helper-text, .cd-profil-section .fi-fo-field-content-col > p { text-align: center; }
+
+/* photo par défaut (silhouette) tant qu'aucune photo n'est choisie ; le texte n'apparaît qu'au survol */
+.cd-profil-section .filepond--root:not(:has(.filepond--item)) { background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20120%20120'%3E%3Crect%20width='120'%20height='120'%20fill='%23e3e9f0'/%3E%3Ccircle%20cx='60'%20cy='46'%20r='22'%20fill='%239fb0c4'/%3E%3Cpath%20d='M16%20120c0-27%2019-44%2044-44s44%2017%2044%2044z'%20fill='%239fb0c4'/%3E%3C/svg%3E") center / cover no-repeat; border-radius: 999px; }
+.cd-profil-section .filepond--root:not(:has(.filepond--item)) .filepond--panel-root { background: transparent; }
+.cd-profil-section .filepond--root:not(:has(.filepond--item)) .filepond--drop-label { opacity: 0; transition: opacity .15s; background: rgba(255,255,255,.85); border-radius: 999px; }
+.cd-profil-section .filepond--root:not(:has(.filepond--item)):hover .filepond--drop-label { opacity: 1; }
+.cd-profil-section .filepond--root:not(:has(.filepond--item)) .filepond--drop-label { opacity: 0 !important; background: none; }
+.cd-profil-section .filepond--root:not(:has(.filepond--item)):hover .filepond--drop-label { opacity: 1 !important; background: rgba(255,255,255,.88); }
+.cd-profil-section .filepond--root:not(:has(.filepond--item)) { box-shadow: inset 0 0 0 1px #dde2e8; }
+.cd-profil-section .filepond--root:not(:has(.filepond--item)) .filepond--drop-label label, .cd-profil-section .filepond--root:not(:has(.filepond--item)) .filepond--drop-label a { opacity: 0 !important; transition: opacity .15s; }
+.cd-profil-section .filepond--root:not(:has(.filepond--item)):hover .filepond--drop-label label, .cd-profil-section .filepond--root:not(:has(.filepond--item)):hover .filepond--drop-label a { opacity: 1 !important; }
+/* texte du cercle de téléversement : masqué, visible seulement au survol (filepond le cache déjà quand une photo est choisie) */
+.cd-profil-section .filepond--drop-label label, .cd-profil-section .filepond--drop-label .filepond--label-action { color: transparent !important; text-decoration: none; transition: color .15s; }
+.cd-profil-section .filepond--root:hover .filepond--drop-label label { color: #1f2937 !important; }
+.cd-profil-section .filepond--root:hover .filepond--drop-label .filepond--label-action { color: #336399 !important; }
+.cd-profil-section .filepond--root:hover .filepond--drop-label { background: rgba(255,255,255,.88); border-radius: 999px; }
+
+/* page Paramètres : le logo remplace la photo ronde, sur un fond clair */
+.cd-logo-section .filepond--root { border-radius: .5rem; background: #fff; }
+.cd-logo-section .filepond--root:not(:has(.filepond--item)) { background: #fff url("/images/logo-cdphm.png") center / auto 70% no-repeat; border-radius: .5rem; box-shadow: none; }
+.cd-logo-section .filepond--root { min-height: 9rem; }
+.cd-logo-section .filepond--root:not(:has(.filepond--item)) .filepond--drop-label { min-height: 9rem; }
+.cd-logo-section .filepond--root, .cd-logo-section .fi-fo-file-upload > div { width: 100% !important; }
+.cd-logo-section .fi-fo-file-upload, .cd-logo-section .fi-fo-file-upload-input-ctn, .cd-logo-section .fi-fo-field-content-col { width: 100% !important; align-self: stretch; align-items: stretch; }
+.cd-logo-section .filepond--root { box-shadow: inset 0 0 0 1px #dde2e8; }

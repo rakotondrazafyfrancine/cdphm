@@ -41,7 +41,8 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => rtrim(env('APP_URL', 'http://localhost'), '/').'/storage',
+            // adresse relative : fonctionne quel que soit l'adresse ou le port du serveur
+            'url' => '/storage',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

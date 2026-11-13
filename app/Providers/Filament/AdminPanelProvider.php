@@ -39,19 +39,23 @@ class AdminPanelProvider extends PanelProvider
                 url('/rapports/*'), url('/archives/*'), url('/lots/*'), url('/factures/*'), url('/sorties/*'),
                 url('/sorties-chambre/*'), url('/sorties-tunnel/*'), url('/tunnels/*/print'),
             ])
+            ->profile(\App\Filament\Pages\Auth\MonProfil::class, isSimple: false)
             ->databaseNotifications()
             ->databaseNotificationsPolling('60s')
             ->defaultAvatarProvider(\App\Filament\AvatarInitiale::class)
             ->userMenuItems([
+                // en-tête du menu : avatar, nom et rôle (non cliquable)
                 'profile' => \Filament\Actions\Action::make('profile')
                     ->label(fn () => new \Illuminate\Support\HtmlString(
-                        '<span class="cd-pc"><span class="cd-pc-avatar">' . e(mb_strtoupper(mb_substr((string) auth()->user()->pseudo, 0, 1))) . '</span>'
-                        . '<span class="cd-pc-textes"><b>' . e(auth()->user()->pseudo) . '</b></span></span>'
+                        '<span class="cd-pc">' . (auth()->user()->photoUrl()
+                            ? '<img class="cd-pc-avatar" src="' . e(auth()->user()->photoUrl()) . '" alt="">'
+                            : '<span class="cd-pc-avatar">' . e(mb_strtoupper(mb_substr((string) (auth()->user()->prenom ?: auth()->user()->pseudo), 0, 1))) . '</span>')
+                        . '<span class="cd-pc-textes"><b>' . e(auth()->user()->libelleRole()) . '</b></span></span>'
                     )),
-                \Filament\Actions\Action::make('journal')
-                    ->label("Journal d'activité")
-                    ->icon('lucide-scroll-text')
-                    ->url(fn () => \App\Filament\Resources\Journaux\JournalResource::getUrl('index')),
+                \Filament\Actions\Action::make('monprofil')
+                    ->label('Mon profil')
+                    ->icon('lucide-user')
+                    ->url(fn () => filament()->getProfileUrl()),
                 \Filament\Actions\Action::make('parametres')
                     ->label('Paramètres')
                     ->icon('lucide-settings')
