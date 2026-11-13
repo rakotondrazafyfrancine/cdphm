@@ -9,7 +9,7 @@ class VerifierAlertesTunnel extends Command
 {
     protected $signature = 'lots:alertes-tunnel';
 
-    protected $description = 'Crée une notification pour chaque lot resté plus de 24 h en tunnel';
+    protected $description = 'Crée une notification quand un tunnel démarré depuis plus de 24 h peut être ouvert';
 
     public function handle(): int
     {

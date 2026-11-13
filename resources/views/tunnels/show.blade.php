@@ -92,7 +92,7 @@
                                     <x-lucide-package-open class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> Confirmer sortie
                                 </a>
                             @else
-                                <a href="{{ route('lots.demanderSortieTunnel', $lot->id) }}" onclick="return confirm('Créer la facture de sortie pour ce lot ?');" style="background: #0284c7; color: white; padding: 6px 10px; border-radius: 8px; text-decoration: none; font-size: 12px; white-space: nowrap;">
+                                <a href="{{ route('lots.demanderSortieTunnel', $lot->id) }}" onclick="const p = prompt('Contre-pesée à la sortie (kg) — poids enregistré : {{ number_format((float) $lot->poids_entree, 2, ',', ' ') }} kg', '{{ (float) $lot->poids_entree }}'); if (!p || isNaN(parseFloat(p.replace(',', '.'))) || parseFloat(p.replace(',', '.')) <= 0) return false; this.href += '?poids=' + encodeURIComponent(p.replace(',', '.'));" style="background: #0284c7; color: white; padding: 6px 10px; border-radius: 8px; text-decoration: none; font-size: 12px; white-space: nowrap;">
                                     <x-lucide-package-open class="lu" style="width:1em;height:1em;vertical-align:-.125em;" /> Sortir
                                 </a>
                             @endif

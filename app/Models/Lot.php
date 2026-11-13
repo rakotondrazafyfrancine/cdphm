@@ -280,7 +280,8 @@ class Lot extends Model
     public function hasDepassementTunnel(): bool
     {
         return $this->type_infrastructure === 'tunnel'
-            && ($this->heures_tunnel ?? 0) > 24;
+            && $this->tunnel?->demarre_le !== null
+            && $this->tunnel->demarre_le->lt(now()->subHours(24));
     }
 
     /**

@@ -18,24 +18,55 @@ class Sorties
 
     public const EFFECTUEE = 'sortie_effectuee';
 
-    /** Sortie totale d'un lot en tunnel : facture créée, en attente de paiement. */
-    public static function sortirTunnel(Lot $lot): SortieTunnel
+    /**
+     * Sortie totale d'un lot en tunnel, créée au moment du BON DE SORTIE (avant le passage à la caisse).
+     *
+     * Le poids est celui de la contre-pesée. Il figure sur le bon et c'est ce poids que
+     * le client paie à la caisse. L'écart avec le poids enregistré est signalé aux responsables.
+     */
+    public static function sortirTunnel(Lot $lot, ?float $poidsReel = null): SortieTunnel
     {
-        $heures = $lot->created_at ? now()->diffInHours($lot->created_at, absolute: true) : 0;
+        // les heures de congélation comptent depuis le démarrage du tunnel, pas depuis l'enregistrement du lot
+        $debut = $lot->tunnel?->demarre_le ?? $lot->created_at;
+        $heures = $debut ? now()->diffInHours($debut, absolute: true) : 0;
         $jours = 1;
         $tarif = (float) ($lot->tarif_applique ?? Lot::tarifTunnel());
 
-        return SortieTunnel::create([
+        $enregistre = (float) $lot->poids_entree;
+        $reel = $poidsReel !== null && $poidsReel > 0 ? round($poidsReel, 2) : $enregistre;
+        $ecart = round($reel - $enregistre, 2);
+        $facture = $reel;
+
+        $sortie = SortieTunnel::create([
             'lot_id' => $lot->id,
-            'poids_sorti' => $lot->poids_entree,
+            'poids_sorti' => $reel,
+            'poids_enregistre' => $enregistre,
+            'ecart' => $ecart,
             'heures' => $heures,
             'jours' => $jours,
-            'montant' => $lot->poids_entree * $jours * $tarif,
+            'montant' => $facture * $jours * $tarif,
             'tarif_applique' => $tarif,
             'emplacement' => $lot->tunnel?->nom,
             'date_entree' => $lot->created_at,
             'statut' => self::EN_ATTENTE,
         ]);
+
+        if ($ecart != 0.0) {
+            self::signalerEcart($lot, $sortie);
+        }
+
+        return $sortie;
+    }
+
+    /** Message si le tunnel du lot est démarré depuis moins de 24 h (donc impossible à ouvrir), sinon null. */
+    public static function tunnelFerme(Lot $lot): ?string
+    {
+        $tunnel = $lot->tunnel;
+        if (! $tunnel || $tunnel->peutEtreOuvert()) {
+            return null;
+        }
+
+        return $tunnel->nom . ' a démarré le ' . $tunnel->demarre_le->format('d/m à H:i') . ' : il ne peut être ouvert qu\'à partir du ' . $tunnel->ouvrableLe()->format('d/m à H:i') . '.';
     }
 
     /** Sortie (partielle ou totale) d'un lot en chambre : facture créée, en attente de paiement. */
@@ -67,6 +98,28 @@ class Sorties
         return [$jours, (float) ($lot->tarif_applique ?? Lot::tarifChambre())];
     }
 
+    /** Prévient tous les utilisateurs d'un écart de poids constaté à la contre-pesée de sortie d'un tunnel. */
+    private static function signalerEcart(Lot $lot, SortieTunnel $sortie): void
+    {
+        $ecart = (float) $sortie->ecart;
+        $kg = fn ($v) => number_format(abs($v), 2, ',', ' ') . ' kg';
+
+        $notification = \Filament\Notifications\Notification::make()
+            ->title($lot->numero . ' : écart de poids à la contre-pesée')
+            ->body(collect([
+                $lot->client?->nom,
+                $lot->espece,
+                'enregistré ' . $kg($sortie->poids_enregistre),
+                'constaté ' . $kg($sortie->poids_sorti),
+                $ecart > 0 ? '+' . $kg($ecart) . ' de plus que l’enregistrement' : '-' . $kg($ecart) . ' de moins que l’enregistrement, à justifier',
+            ])->filter()->implode(' · '))
+            ->{$ecart > 0 ? 'info' : 'warning'}()
+            ->icon('lucide-scale')
+            ->toDatabase();
+
+        \App\Models\User::all()->each(fn ($u) => $u->notifyNow($notification));
+    }
+
     /** Vrai si le lot a déjà une facture non terminée (à payer ou à sortir). */
     public static function aUneSortieEnCours(Lot $lot): bool
     {
@@ -74,15 +127,19 @@ class Sorties
             || $lot->sortiesTunnel()->whereIn('statut', [self::EN_ATTENTE, self::PAYE])->exists();
     }
 
-    /** Sortie physique d'un lot de tunnel (la facture doit être payée). */
+    /** Sortie physique d'un lot de tunnel, une fois la facture payée à la caisse. */
     public static function confirmerTunnel(SortieTunnel $sortie): void
     {
         $lot = $sortie->lot;
+        $tunnelId = $lot->tunnel_id;
         $lot->statut = 'sorti';
         $lot->date_sortie = now();
         $lot->tunnel_id = null;
         $lot->montant_tunnel = $sortie->montant;
         $lot->save();
+
+        // dernier lot sorti : le tunnel est de nouveau libre pour un nouveau chargement
+        \App\Models\Tunnel::find($tunnelId)?->libererSiVide();
 
         $sortie->statut = self::EFFECTUEE;
         $sortie->save();
@@ -143,6 +200,12 @@ class Sorties
             'poids_entree' => (float) $lot->poids_entree,
             'deja_sorti' => $dejaSorti,
             'poids_sorti' => (float) $sortie->poids_sorti,
+            'poids_enregistre' => ! $chambre && $sortie->poids_enregistre !== null ? (float) $sortie->poids_enregistre : (float) $lot->poids_entree,
+            'ecart' => $chambre ? 0.0 : (float) ($sortie->ecart ?? 0),
+            'complement' => ! $chambre && $sortie->complement_de_id !== null,
+            'poids_facture' => $chambre || (float) $sortie->tarif_applique * max((int) $sortie->jours, 1) <= 0
+                ? (float) $sortie->poids_sorti
+                : round((float) $sortie->montant / ((float) $sortie->tarif_applique * max((int) $sortie->jours, 1)), 2),
             'reste' => $reste,
             'partielle' => $chambre && $reste > 0,
             'jours' => (int) $sortie->jours,

@@ -54,6 +54,10 @@ class LotForm
         return Tunnel::orderBy('nom')->get()
             ->filter(function (Tunnel $tunnel) use ($inclure) {
                 $capacite = (float) $tunnel->capacite_tonnes * 1000;
+                // un tunnel déjà démarré ne peut plus être ouvert : on n'y ajoute pas de lot
+                if ($tunnel->id !== $inclure && $tunnel->estDemarre()) {
+                    return false;
+                }
                 if ($tunnel->id === $inclure || $capacite <= 0) {
                     return true;
                 }

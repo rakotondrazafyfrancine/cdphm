@@ -90,12 +90,12 @@ class LotsTable
                         }),
 
                     BulkAction::make('sortirGroupe')
-                        ->label('Sortir (facture groupée)')
+                        ->label('Sortir (bon de sortie)')
                         ->icon('lucide-package-open')
                         ->color('primary')
-                        ->modalHeading('Sortie des lots sélectionnés')
-                        ->modalDescription('Un seul document pour tous les lots, qu\'ils soient en tunnel ou en chambre.')
-                        ->modalSubmitActionLabel('Créer la facture')
+                        ->modalHeading('Bon de sortie des lots sélectionnés')
+                        ->modalDescription('Le bon de sortie est remis au client, qui le porte à la caisse. Un seul bon pour tous les lots, en tunnel ou en chambre.')
+                        ->modalSubmitActionLabel('Créer le bon de sortie')
                         ->modalWidth('lg')
                         ->schema(fn (Collection $records) => $records
                             ->filter(fn ($lot) => $lot->statut !== 'sorti')
@@ -112,9 +112,10 @@ class LotsTable
                                         ->required()
                                     : TextInput::make('tunnel_' . $lot->id)
                                         ->label($label)
-                                        ->default(number_format($restant, 2, ',', ' ') . ' kg')
-                                        ->helperText('Sortie totale du tunnel')
-                                        ->disabled()->dehydrated(false);
+                                        ->numeric()->minValue(0.01)->step(0.01)->suffix('kg')
+                                        ->default($restant)
+                                        ->helperText('Contre-pesée : poids enregistré ' . number_format($restant, 2, ',', ' ') . ' kg. Ce poids figure sur le bon et la caisse facture ce poids.')
+                                        ->required();
                             })->values()->all())
                         ->deselectRecordsAfterCompletion()
                         ->action(function (Collection $records, array $data, $livewire) {
@@ -142,7 +143,13 @@ class LotsTable
                                     }
                                     $chambre[] = Sorties::sortirChambre($lot, $poids)->id;
                                 } elseif ($lot->tunnel_id && $lot->statut === 'en_congelation') {
-                                    $tunnel[] = Sorties::sortirTunnel($lot)->id;
+                                    if ($message = Sorties::tunnelFerme($lot)) {
+                                        Notification::make()->title($lot->numero . ' : tunnel fermé')->body($message)->warning()->send();
+                                        $ignores[] = $lot->numero;
+
+                                        continue;
+                                    }
+                                    $tunnel[] = Sorties::sortirTunnel($lot, (float) ($data['tunnel_' . $lot->id] ?? 0))->id;
                                 } else {
                                     $ignores[] = $lot->numero;
                                 }
@@ -157,8 +164,9 @@ class LotsTable
                                 return;
                             }
 
-                            Notification::make()->title(count($chambre) + count($tunnel) . ' facture(s) créée(s)')->success()->send();
-                            self::ouvrir($livewire, route('factures.groupee', array_filter([
+                            Notification::make()->title('Bon de sortie créé')
+                                ->body('Le client le porte à la caisse, où la facture est établie puis payée.')->success()->send();
+                            self::ouvrir($livewire, route('sorties.bonGroupe', array_filter([
                                 'chambre' => implode(',', $chambre),
                                 'tunnel' => implode(',', $tunnel),
                             ])));
@@ -186,14 +194,14 @@ class LotsTable
                         }),
 
                     BulkAction::make('confirmerGroupe')
-                        ->label('Confirmer la sortie (bon de sortie)')
+                        ->label('Confirmer la sortie (client payé)')
                         ->icon('lucide-package-check')
                         ->color('success')
                         ->requiresConfirmation()
                         ->modalHeading('Confirmer la sortie physique des lots payés ?')
-                        ->modalDescription('Les lots dont la facture est payée sortent, et un seul bon de sortie est imprimé.')
+                        ->modalDescription('Le client a payé à la caisse : les produits lui sont remis et les lots sortent du stock.')
                         ->deselectRecordsAfterCompletion()
-                        ->action(function (Collection $records, $livewire) {
+                        ->action(function (Collection $records) {
                             if (! self::memeClient($records)) {
                                 return;
                             }
@@ -207,17 +215,9 @@ class LotsTable
                                 return;
                             }
 
-                            $chambre = $sorties->filter(fn ($x) => $x instanceof SortieChambre);
-                            $tunnel = $sorties->filter(fn ($x) => $x instanceof SortieTunnel);
-
-                            $chambre->each(fn ($x) => Sorties::confirmerChambre($x));
-                            $tunnel->each(fn ($x) => Sorties::confirmerTunnel($x));
+                            $sorties->each(fn ($x) => $x instanceof SortieChambre ? Sorties::confirmerChambre($x) : Sorties::confirmerTunnel($x));
 
                             Notification::make()->title($sorties->count() . ' sortie(s) confirmée(s)')->success()->send();
-                            self::ouvrir($livewire, route('sorties.bonGroupe', array_filter([
-                                'chambre' => $chambre->pluck('id')->implode(','),
-                                'tunnel' => $tunnel->pluck('id')->implode(','),
-                            ])));
                         }),
                 ])->label('Actions groupées'),
             ]);

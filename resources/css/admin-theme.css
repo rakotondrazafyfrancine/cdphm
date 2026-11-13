@@ -512,3 +512,9 @@ html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn, html:not(.dar
 
 /* ligne Client / Produit : alignés en bas, même quand la petite zone « nouveau produit » s'affiche au-dessus du produit */
 .cd-bloc-principal .fi-sc-grid, .cd-bloc-principal .fi-grid { align-items: end; }
+
+/* carte de tunnel + bouton « Démarrer le tunnel » juste dessous */
+.cd-carte-bloc { display: flex; flex-direction: column; gap: .5rem; }
+.cd-carte-bloc > .cd-carte-lien { flex: 1; }
+.cd-bouton-demarrer { display: inline-flex; align-items: center; justify-content: center; gap: .4rem; width: 100%; padding: .55rem .75rem; border-radius: .375rem; background: #336399; color: #fff; font-weight: 600; font-size: .85rem; cursor: pointer; }
+.cd-bouton-demarrer:hover { background: #2b5282; }

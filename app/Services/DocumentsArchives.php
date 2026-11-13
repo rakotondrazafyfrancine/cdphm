@@ -61,13 +61,11 @@ class DocumentsArchives
         ], $ouverture);
     }
 
-    /** Bon de sortie : seulement quand toutes les sorties sont effectuées, sinon null. @return array{0: Archive, 1: bool}|null */
+    /** Bon de sortie : émis dès la sortie demandée (avant la caisse), archivé à la première impression. @return array{0: Archive, 1: bool}|null */
     public static function bonSortie(Collection $chambre, Collection $tunnel, bool $ouverture = true): ?array
     {
+        // le bon de sortie est remis au client AVANT le paiement : il le porte à la caisse
         $lignes = self::lignes($chambre, $tunnel);
-        if (! $lignes->every(fn ($l) => $l['statut'] === Sorties::EFFECTUEE)) {
-            return null;
-        }
 
         $cle = 'sortie:c' . $chambre->pluck('id')->sort()->implode(',') . ';t' . $tunnel->pluck('id')->sort()->implode(',');
         $client = $chambre->merge($tunnel)->first()->lot->client;

@@ -162,6 +162,7 @@ class LotWebController extends Controller
             'dateEmission' => $archive->created_at,
             'duplicata' => $duplicata,
             'societeSnap' => $archive->contenu['societe'] ?? null,
+            'emisPar' => $archive->emis_par,
         ], $en_plus);
     }
 
@@ -253,7 +254,7 @@ class LotWebController extends Controller
     }
 
     // ÉTAPE 1 — Le magasinier demande une sortie tunnel : calcule et facture
-    public function demanderSortieTunnel($id)
+    public function demanderSortieTunnel(Request $request, $id)
     {
         $lot = Lot::with(['client', 'tunnel'])->findOrFail($id);
 
@@ -261,10 +262,14 @@ class LotWebController extends Controller
             return redirect()->back()->with('error', 'Ce lot n\'est plus en tunnel.');
         }
 
-        $sortie = Sorties::sortirTunnel($lot);
+        if ($message = Sorties::tunnelFerme($lot)) {
+            return redirect()->back()->with('error', $message);
+        }
 
-        return redirect()->route('tunnels.show', $lot->tunnel_id)
-            ->with('success', 'Facture créée pour ' . $lot->numero . ' — ' . number_format($sortie->montant, 0, ',', ' ') . ' Ar à payer à la caisse.');
+        $sortie = Sorties::sortirTunnel($lot, $request->filled('poids') ? (float) $request->query('poids') : null);
+
+        return redirect()->route('sorties.bonGroupe', ['tunnel' => $sortie->id])
+            ->with('success', 'Bon de sortie créé pour ' . $lot->numero . ' — le client le porte à la caisse.');
     }
 
     // ÉTAPE 2 — La caisse encaisse et marque la facture payée
@@ -294,7 +299,7 @@ class LotWebController extends Controller
 
         Sorties::confirmerTunnel($sortie);
 
-        return $this->bonSortieDe(collect(), collect([$sortie->fresh('lot.client')]), true);
+        return redirect()->back()->with('success', 'Sortie confirmée : les produits sont remis au client.');
     }
 
     // Affiche le formulaire de sortie partielle
@@ -329,8 +334,8 @@ class LotWebController extends Controller
         $sortie = Sorties::sortirChambre($lot, $poidsSortie);
         $montant = $sortie->montant;
 
-        return redirect()->route('stock.index')
-            ->with('success', 'Facture créée pour ' . $lot->numero . ' — ' . number_format($montant, 0, ',', ' ') . ' Ar à payer à la caisse.');
+        return redirect()->route('sorties.bonGroupe', ['chambre' => $sortie->id])
+            ->with('success', 'Bon de sortie créé pour ' . $lot->numero . ' — le client le porte à la caisse (' . number_format($montant, 0, ',', ' ') . ' Ar).');
     }
 
     // ÉTAPE 2 — La caisse encaisse et marque la facture payée
@@ -360,7 +365,7 @@ class LotWebController extends Controller
 
         Sorties::confirmerChambre($sortie);
 
-        return $this->bonSortieDe(collect([$sortie->fresh('lot.client')]), collect(), true);
+        return redirect()->back()->with('success', 'Sortie confirmée : les produits sont remis au client.');
     }
 
     // Facture de sortie tunnel

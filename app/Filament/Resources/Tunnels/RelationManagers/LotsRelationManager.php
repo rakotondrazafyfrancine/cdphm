@@ -3,7 +3,11 @@
 namespace App\Filament\Resources\Tunnels\RelationManagers;
 
 use App\Filament\Resources\Lots\LotResource;
+use App\Models\SortieTunnel;
+use App\Services\Sorties;
 use Filament\Actions\Action;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Enums\RecordActionsPosition;
@@ -25,24 +29,29 @@ class LotsRelationManager extends RelationManager
             ->paginated(false)
             ->emptyStateHeading('Aucun lot en congélation.')
             ->emptyStateIcon('lucide-snowflake')
-            ->recordClasses(fn ($record) => $record->created_at && $record->created_at->lt(now()->subHours(24)) ? 'cd-ligne-alerte' : null)
+            ->recordClasses(fn ($record) => $this->getOwnerRecord()->etat() === 'pret' ? 'cd-ligne-alerte' : null)
             ->columns([
                 TextColumn::make('numero')->label('N° Lot')->weight('bold'),
                 TextColumn::make('client.nom')->label('Client')->placeholder('-'),
                 TextColumn::make('espece')->label('Produit')->placeholder('-'),
                 TextColumn::make('poids_entree')->label('Quantité (kg)')->numeric(2),
                 TextColumn::make('created_at')->label('Date entrée')->date('d/m/Y'),
-                TextColumn::make('depuis')->label('Depuis')->badge()->color('gray')
-                    ->state(fn ($record) => $record->created_at?->diffForHumans()),
-                TextColumn::make('alerte')->label('Alerte')->badge()
-                    ->state(fn ($record) => $record->created_at && $record->created_at->lt(now()->subHours(24)) ? '+24 h' : 'OK')
-                    ->color(fn (string $state) => $state === 'OK' ? 'success' : 'danger')
-                    ->icon(fn (string $state) => $state === 'OK' ? 'lucide-circle-check' : 'lucide-triangle-alert'),
+                TextColumn::make('depuis')->label('En tunnel depuis')->badge()->color('gray')
+                    ->state(fn () => $this->getOwnerRecord()->estDemarre() ? $this->getOwnerRecord()->demarre_le->diffForHumans() : 'Pas encore démarré'),
+                TextColumn::make('alerte')->label('État')->badge()
+                    ->state(fn () => match ($this->getOwnerRecord()->etat()) {
+                        'chargement' => 'En chargement',
+                        'ferme' => 'Fermé jusqu\'à ' . $this->getOwnerRecord()->ouvrableLe()->format('d/m H:i'),
+                        'pret' => 'Prêt à ouvrir',
+                    })
+                    ->color(fn (string $state) => $state === 'Prêt à ouvrir' ? 'danger' : 'gray')
+                    ->icon(fn (string $state) => $state === 'Prêt à ouvrir' ? 'lucide-triangle-alert' : ($state === 'En chargement' ? 'lucide-package-plus' : 'lucide-lock')),
             ])
             ->headerActions([
                 Action::make('ajouter')
                     ->label('Ajouter un lot')
                     ->icon('lucide-plus')
+                    ->visible(fn () => ! $this->getOwnerRecord()->estDemarre())
                     ->url(fn () => LotResource::getUrl('create', ['tunnel_id' => $this->getOwnerRecord()->id])),
             ])
             ->recordActionsPosition(RecordActionsPosition::AfterColumns)
@@ -54,16 +63,41 @@ class LotsRelationManager extends RelationManager
                     ->icon('lucide-package-check')
                     ->color('success')
                     ->visible(fn ($record) => $record->sortiesTunnel->contains('statut', 'paye'))
-                    ->url(fn ($record) => route('sortiesTunnel.confirmer', $record->sortiesTunnel->firstWhere('statut', 'paye')->id)),
+                    ->requiresConfirmation()
+                    ->modalHeading(fn ($record) => 'Confirmer la sortie du lot ' . $record->numero . ' ?')
+                    ->modalDescription('Le client a payé à la caisse : les produits lui sont remis.')
+                    ->action(function ($record) {
+                        Sorties::confirmerTunnel($record->sortiesTunnel->firstWhere('statut', 'paye'));
+                        Notification::make()->title('Sortie confirmée')->success()->send();
+                    }),
                 Action::make('sortir')
-                    ->label('Sortir')
+                    ->label('Bon de sortie')
                     ->icon('lucide-package-open')
                     ->color('info')
-                    ->visible(fn ($record) => ! $record->sortiesTunnel->contains('statut', 'paye'))
-                    ->requiresConfirmation()
-                    ->modalHeading('Créer la facture de sortie ?')
-                    ->modalDescription(fn ($record) => 'Une facture de sortie sera créée pour le lot ' . $record->numero . '.')
-                    ->action(fn ($record) => redirect()->route('lots.demanderSortieTunnel', $record->id)),
+                    ->visible(fn ($record) => ! $record->sortiesTunnel->contains(fn ($s) => in_array($s->statut, ['en_attente_paiement', 'paye'])))
+                    ->disabled(fn () => ! $this->getOwnerRecord()->peutEtreOuvert())
+                    ->tooltip(fn () => $this->getOwnerRecord()->peutEtreOuvert() ? null : 'Tunnel fermé jusqu\'au ' . $this->getOwnerRecord()->ouvrableLe()->format('d/m à H:i'))
+                    ->modalHeading(fn ($record) => 'Bon de sortie du lot ' . $record->numero)
+                    ->modalDescription('Saisis le poids constaté à la contre-pesée. Le client porte ensuite le bon à la caisse.')
+                    ->modalSubmitActionLabel('Créer le bon de sortie')
+                    ->schema(fn ($record) => [
+                        TextInput::make('poids_constate')
+                            ->label('Poids constaté (kg)')
+                            ->numeric()->minValue(0.01)->step(0.01)->suffix('kg')
+                            ->default((float) $record->poids_entree)
+                            ->helperText('Poids enregistré : ' . number_format((float) $record->poids_entree, 2, ',', ' ') . ' kg. Ce poids figure sur le bon et la caisse facture ce poids.')
+                            ->required(),
+                    ])
+                    ->action(function ($record, array $data, $livewire) {
+                        if ($message = Sorties::tunnelFerme($record)) {
+                            Notification::make()->title('Tunnel fermé')->body($message)->warning()->send();
+
+                            return;
+                        }
+                        $sortie = Sorties::sortirTunnel($record, (float) $data['poids_constate']);
+                        Notification::make()->title('Bon de sortie créé')->body('Le client le porte à la caisse.')->success()->send();
+                        $livewire->js('window.open(' . json_encode(route('sorties.bonGroupe', ['tunnel' => $sortie->id])) . ', "_blank")');
+                    }),
             ]);
     }
 }
