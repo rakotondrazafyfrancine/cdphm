@@ -76,7 +76,7 @@ class CreateLot extends CreateRecord
         if ($lot->chambre_id) {
             $lot->date_entree_chambre = now();
             $lot->poids_restant = $lot->poids_entree;
-            $lot->tarif_applique = Lot::tarifChambre();
+            $lot->tarif_applique = Lot::tarifChambre($espece);
         }
 
         $lot->save();

@@ -46,12 +46,12 @@ class StockWebController extends Controller
         if ($lot->statut === 'sorti' && $lot->date_entree_chambre && $lot->date_sortie) {
             $jours = \Carbon\Carbon::parse($lot->date_entree_chambre)
                         ->diffInDays($lot->date_sortie) + 1;
-            $tarifChambre = 25;
+            $tarifChambre = (float) ($lot->tarif_applique ?? AppModelsot::tarifchambre($lot->espece));
             $montant = $lot->poids_entree * $jours * $tarifChambre;
         } else {
             $jours = null;
             $montant = null;
-            $tarifChambre = 25;
+            $tarifChambre = (float) ($lot->tarif_applique ?? AppModelsot::tarifchambre($lot->espece));
         }
 
         return view('stocks.show', compact('lot', 'jours', 'montant', 'tarifChambre'));

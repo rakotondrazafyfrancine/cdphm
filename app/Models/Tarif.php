@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Tarif extends Model
 {
     /** Tarifs modifiables depuis l'interface : tunnel (congélation) et chambre (stock). */
-    public const DESIGNATIONS_GEREES = ['Tunnel', 'Chambre'];
+    public const CHAMBRE_CRUSTACES = 'Chambre langouste/crabe';
+
+    public const DESIGNATIONS_GEREES = ['Tunnel', 'Chambre', self::CHAMBRE_CRUSTACES];
 
     protected static function booted(): void
     {
@@ -25,7 +27,13 @@ class Tarif extends Model
                     'montant_tunnel' => \Illuminate\Support\Facades\DB::raw('poids_entree * ' . $montant),
                 ]);
             } elseif ($tarif->designation === 'Chambre') {
-                Lot::where('statut', 'en_stock')->update(['tarif_applique' => $montant]);
+                Lot::where('statut', 'en_stock')->get()
+                    ->reject(fn (Lot $l) => Lot::estCrustace($l->espece))
+                    ->each(fn (Lot $l) => $l->update(['tarif_applique' => $montant]));
+            } elseif ($tarif->designation === self::CHAMBRE_CRUSTACES) {
+                Lot::where('statut', 'en_stock')->get()
+                    ->filter(fn (Lot $l) => Lot::estCrustace($l->espece))
+                    ->each(fn (Lot $l) => $l->update(['tarif_applique' => $montant]));
             }
         });
     }
@@ -34,7 +42,8 @@ class Tarif extends Model
     {
         return match ($this->designation) {
             'Tunnel' => 'Congélation',
-            'Chambre' => 'Stock',
+            'Chambre' => 'Stock (autres produits)',
+            self::CHAMBRE_CRUSTACES => 'Stock langouste et crabe',
             default => (string) $this->designation,
         };
     }

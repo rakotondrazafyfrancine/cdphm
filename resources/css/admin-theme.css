@@ -593,3 +593,32 @@ html:not(.dark) .fi-sidebar-item.fi-active > .fi-sidebar-item-btn, html:not(.dar
 .cd-logo-section .filepond--root, .cd-logo-section .fi-fo-file-upload > div { width: 100% !important; }
 .cd-logo-section .fi-fo-file-upload, .cd-logo-section .fi-fo-file-upload-input-ctn, .cd-logo-section .fi-fo-field-content-col { width: 100% !important; align-self: stretch; align-items: stretch; }
 .cd-logo-section .filepond--root { box-shadow: inset 0 0 0 1px #dde2e8; }
+
+/* ===== statistiques en couleur : fond teinté, chiffre et icône de la même couleur (tableau de bord et rapports) ===== */
+.fi-wi-stats-overview-stat { --cd-c: #0e7c86; --cd-cf: #e4f5f7; --cd-cb: #bfe6ea; --cd-cl: #6fd3d1; }
+.fi-grid-col:nth-child(2) .fi-wi-stats-overview-stat { --cd-c: #1f4d80; --cd-cf: #e7eef8; --cd-cb: #c5d6ec; --cd-cl: #8fb4e3; }
+.fi-grid-col:nth-child(3) .fi-wi-stats-overview-stat { --cd-c: #0369a1; --cd-cf: #e0f2fe; --cd-cb: #bae0f7; --cd-cl: #7dd3fc; }
+.fi-grid-col:nth-child(4) .fi-wi-stats-overview-stat { --cd-c: #047857; --cd-cf: #e2f6ee; --cd-cb: #b7e4d2; --cd-cl: #6ee7b7; }
+.fi-grid-col:nth-child(5) .fi-wi-stats-overview-stat { --cd-c: #5b3fb0; --cd-cf: #ece8fa; --cd-cb: #d3c9f2; --cd-cl: #b7a6f0; }
+.fi-grid-col:nth-child(6) .fi-wi-stats-overview-stat { --cd-c: #b45309; --cd-cf: #fdf0dc; --cd-cb: #f3d9a8; --cd-cl: #fcd34d; }
+/* page Rapports : vert, bleu marine, bleu ciel, violet */
+.fi-grid-col:nth-child(1) .fi-wi-stats-overview-stat.cd-stat-rapport { --cd-c: #047857; --cd-cf: #e2f6ee; --cd-cb: #b7e4d2; --cd-cl: #6ee7b7; }
+.fi-grid-col:nth-child(2) .fi-wi-stats-overview-stat.cd-stat-rapport { --cd-c: #1f4d80; --cd-cf: #e7eef8; --cd-cb: #c5d6ec; --cd-cl: #8fb4e3; }
+.fi-grid-col:nth-child(3) .fi-wi-stats-overview-stat.cd-stat-rapport { --cd-c: #0369a1; --cd-cf: #e0f2fe; --cd-cb: #bae0f7; --cd-cl: #7dd3fc; }
+.fi-grid-col:nth-child(4) .fi-wi-stats-overview-stat.cd-stat-rapport { --cd-c: #5b3fb0; --cd-cf: #ece8fa; --cd-cb: #d3c9f2; --cd-cl: #b7a6f0; }
+
+/* bordure en dégradé, fond identique au fond de la page (plus de fond blanc ni teinté) */
+html:not(.dark) .fi-wi-stats-overview-stat { border: 2px solid transparent !important; background: linear-gradient(#f3f5f8, #f3f5f8) padding-box, linear-gradient(135deg, #1f4d80, #5aa9e6) border-box !important; }
+html.dark .fi-wi-stats-overview-stat { border: 2px solid transparent !important; background: linear-gradient(#121213, #121213) padding-box, linear-gradient(135deg, #1f4d80, #5aa9e6) border-box !important; }
+.fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-label { color: var(--cd-c) !important; font-weight: 600; }
+.fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-value { color: var(--cd-c) !important; font-weight: 800; }
+.fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-description { color: var(--cd-c) !important; opacity: .85; }
+.fi-wi-stats-overview-stat svg { color: var(--cd-c) !important; background: var(--cd-cf); border-radius: 999px; padding: .4rem; width: 2rem; height: 2rem; box-sizing: border-box; }
+.dark .fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-label,
+.dark .fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-value,
+.dark .fi-wi-stats-overview-stat .fi-wi-stats-overview-stat-description { color: var(--cd-cl) !important; }
+.dark .fi-wi-stats-overview-stat svg { color: var(--cd-cl) !important; background: #252729; }
+/* le conteneur des statistiques reste transparent : seules les cartes sont colorées */
+.fi-section:has(.fi-wi-stats-overview-stat), .fi-section-content:has(> .fi-grid-col .fi-wi-stats-overview-stat) { background: transparent !important; border: 0 !important; box-shadow: none !important; }
+/* la section qui contient les statistiques n'a ni fond blanc ni contour */
+html:not(.dark) .fi-section:has(.fi-wi-stats-overview-stat), html.dark .fi-section:has(.fi-wi-stats-overview-stat) { background: transparent !important; border: 0 !important; box-shadow: none !important; --tw-ring-shadow: 0 0 #0000 !important; }

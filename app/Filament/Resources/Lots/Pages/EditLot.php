@@ -37,7 +37,7 @@ class EditLot extends EditRecord
 
         if ($record->chambre_id) {
             $record->date_entree_chambre ??= now();
-            $record->tarif_applique = Lot::tarifChambre();
+            $record->tarif_applique = Lot::tarifChambre($record->espece);
             // Les sorties partielles déjà faites sont conservées : on ajuste le reste par l'écart de poids.
             $restant = $record->poids_restant ?? $ancienPoids;
             $record->poids_restant = max(0, $restant + ($nouveauPoids - $ancienPoids));

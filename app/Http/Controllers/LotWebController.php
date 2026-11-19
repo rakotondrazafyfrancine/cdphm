@@ -103,7 +103,7 @@ class LotWebController extends Controller
         if ($request->chambre_id) {
             $lot->date_entree_chambre = now();
             $lot->poids_restant       = $request->poids_entree;
-            $lot->tarif_applique      = $this->tarifChambre();
+            $lot->tarif_applique      = Lot::tarifChambre($espece);
         }
         $lot->save();
 
@@ -245,7 +245,7 @@ class LotWebController extends Controller
             ? round((($lot->poids_sortie - $lot->poids_entree) / $lot->poids_entree) * 100, 2)
             : 0;
 
-        $lot->montant_chambre = $lot->poids_sortie * $this->tarifChambre();
+        $lot->montant_chambre = $lot->poids_sortie * Lot::tarifChambre($lot->espece);
 
         $lot->save();
 

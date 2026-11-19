@@ -69,8 +69,18 @@ class Lot extends Model
         return (float) (Tarif::where('designation', 'Tunnel')->value('montant') ?? 450);
     }
 
-    public static function tarifChambre(): float
+    /** Langouste et crabe ont un tarif de chambre froide à part. */
+    public static function estCrustace(?string $espece): bool
     {
+        return (bool) preg_match('/langouste|crabe/iu', (string) $espece);
+    }
+
+    public static function tarifChambre(?string $espece = null): float
+    {
+        if (self::estCrustace($espece)) {
+            return (float) (Tarif::where('designation', Tarif::CHAMBRE_CRUSTACES)->value('montant') ?? 50);
+        }
+
         return (float) (Tarif::where('designation', 'Chambre')->value('montant') ?? 25);
     }
 

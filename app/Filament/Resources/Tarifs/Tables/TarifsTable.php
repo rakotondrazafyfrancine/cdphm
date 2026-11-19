@@ -16,7 +16,7 @@ class TarifsTable
             ->defaultSort('id')
             ->columns([
                 TextColumn::make('libelle')->label('Désignation')->weight('bold')
-                    ->icon(fn ($record) => $record->designation === 'Tunnel' ? 'lucide-snowflake' : 'lucide-warehouse'),
+                    ->icon(fn ($record) => $record->designation === 'Tunnel' ? 'lucide-snowflake' : ($record->designation === 'Chambre' ? 'lucide-warehouse' : 'lucide-fish')),
                 TextColumn::make('montant')->label('Tarif')
                     ->formatStateUsing(fn ($state) => number_format((float) $state, 0, ',', ' ') . ' Ar')
                     ->description('par kg et par jour')
