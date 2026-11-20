@@ -46,7 +46,7 @@ class UtilisateurResource extends Resource
             TextInput::make('departement')->label('Département')->maxLength(255),
             TextInput::make('fonction')->label('Fonction')->maxLength(255),
             Select::make('role')->label('Rôle')->options(User::ROLES)->required(),
-            TextInput::make('pseudo')->label('Pseudo (identifiant de connexion)')
+            TextInput::make('pseudo')->label('Poste (identifiant de connexion)')
                 ->required()->maxLength(255)
                 ->unique(ignoreRecord: true),
             TextInput::make('password')->label('Mot de passe')

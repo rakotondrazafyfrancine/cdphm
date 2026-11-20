@@ -52,7 +52,7 @@ class MonProfil extends EditProfile
                     Section::make('Compte')
                         ->columns(2)
                         ->schema([
-                            TextInput::make('pseudo')->label('Pseudo (identifiant de connexion)')->disabled()->dehydrated(false),
+                            TextInput::make('pseudo')->label('Poste (identifiant de connexion)')->disabled()->dehydrated(false),
                             TextInput::make('role_libelle')->label('Rôle')->disabled()->dehydrated(false)
                                 ->formatStateUsing(fn () => $this->getUser()->libelleRole()),
                             TextInput::make('password')

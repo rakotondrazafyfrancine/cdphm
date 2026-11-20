@@ -25,7 +25,7 @@ class ChangerMotDePasse extends RequestPasswordReset
     {
         return $schema->components([
             TextInput::make('pseudo')
-                ->label('Pseudo')
+                ->label('Poste')
                 ->required()
                 ->autocomplete('username')
                 ->autofocus(),
@@ -60,7 +60,7 @@ class ChangerMotDePasse extends RequestPasswordReset
         $user = User::where('pseudo', $data['pseudo'])->first();
 
         if (! $user) {
-            Notification::make()->title('Ce pseudo n\'existe pas.')->danger()->send();
+            Notification::make()->title('Ce poste n\'existe pas.')->danger()->send();
 
             return;
         }
