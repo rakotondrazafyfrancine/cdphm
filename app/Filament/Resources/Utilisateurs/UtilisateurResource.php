@@ -64,7 +64,7 @@ class UtilisateurResource extends Resource
                 TextColumn::make('nom')->label('Nom et prénom')
                     ->state(fn (User $r) => $r->nomComplet())
                     ->searchable(['nom', 'prenom', 'pseudo']),
-                TextColumn::make('pseudo')->label('Pseudo')->searchable(),
+                TextColumn::make('pseudo')->label('Poste')->searchable(),
                 TextColumn::make('role')->label('Rôle')->state(fn (User $r) => $r->libelleRole())->badge(),
                 TextColumn::make('matricule')->label('N° IM')->placeholder('—'),
                 TextColumn::make('departement')->label('Département')->placeholder('—'),

@@ -24,7 +24,7 @@
                     @csrf {{-- protection securite obligatoire pour les formulaires Laravel --}}
 
                     <div class="mb-3">
-                        <label class="form-label">Pseudo</label>
+                        <label class="form-label">Poste</label>
                         <input type="text" name="pseudo" class="form-control" required>
                     </div>
 

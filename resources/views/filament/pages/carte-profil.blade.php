@@ -4,7 +4,7 @@
         ['icone' => 'lucide-badge-check', 'libelle' => 'N° IM', 'valeur' => $u->matricule],
         ['icone' => 'lucide-building-2', 'libelle' => 'Département', 'valeur' => $u->departement],
         ['icone' => 'lucide-briefcase', 'libelle' => 'Fonction', 'valeur' => $u->fonction],
-        ['icone' => 'lucide-at-sign', 'libelle' => 'Pseudo', 'valeur' => $u->pseudo],
+        ['icone' => 'lucide-at-sign', 'libelle' => 'Poste', 'valeur' => $u->pseudo],
     ];
 @endphp
 <div class="cd-profil-carte">
