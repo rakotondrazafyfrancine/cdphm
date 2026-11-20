@@ -40,7 +40,7 @@
         .ministere div:nth-child(5) { padding-left: 2mm; }
         .coord { border: 1.5px solid var(--noir); padding: 2.5mm 3mm; text-align: center; font-size: 10px; line-height: 1.6; }
         .logo-boite { position: relative; width: 28mm; height: 26mm; overflow: hidden; margin-left: auto; }
-        .logo-boite img { position: absolute; left: -1.2mm; top: 0; width: 34mm; max-width: none; height: auto; }
+        .logo-boite img { width: 100%; height: 100%; object-fit: contain; }
 
         .filet { margin-top: 5mm; border-top: 2.5px solid var(--noir); }
         .titre-ligne { display: flex; justify-content: space-between; align-items: baseline; margin-top: 1.5mm; }

@@ -98,6 +98,8 @@
                 <div class="societe">
                     @if ($logo)
                         <img class="logo" src="{{ \Illuminate\Support\Facades\Storage::disk('public')->url($logo) }}" alt="{{ $societe }}">
+                    @else
+                        <img class="logo" src="{{ asset('images/logo-cdphm.png') }}" alt="{{ $societe }}">
                     @endif
                     <div>
                         <div class="nom">{{ $societe }}</div>

@@ -41,7 +41,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->profile(\App\Filament\Pages\Auth\MonProfil::class, isSimple: false)
             ->databaseNotifications()
-            ->databaseNotificationsPolling('60s')
+            ->databaseNotificationsPolling('30s')
             ->defaultAvatarProvider(\App\Filament\AvatarInitiale::class)
             ->userMenuItems([
                 // en-tête du menu : avatar, nom et rôle (non cliquable)

@@ -57,6 +57,18 @@ class Lot extends Model
         'date_sortie' => 'datetime',
     ];
 
+    protected static function booted(): void
+    {
+        // Un tunnel dont les 24 h sont écoulées et qui est vide redevient « en chargement » dès qu'un nouveau lot y entre.
+        static::creating(function (Lot $lot) {
+            $tunnel = $lot->tunnel_id ? Tunnel::find($lot->tunnel_id) : null;
+            if ($tunnel && $tunnel->estDemarre() && $tunnel->peutEtreOuvert()
+                && ! Lot::where('tunnel_id', $tunnel->id)->where('statut', 'en_congelation')->exists()) {
+                $tunnel->update(['demarre_le' => null]);
+            }
+        });
+    }
+
     // ==========================================
     // RELATIONS
     // ==========================================

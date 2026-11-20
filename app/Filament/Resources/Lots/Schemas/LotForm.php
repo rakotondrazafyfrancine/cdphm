@@ -54,8 +54,8 @@ class LotForm
         return Tunnel::orderBy('nom')->get()
             ->filter(function (Tunnel $tunnel) use ($inclure) {
                 $capacite = (float) $tunnel->capacite_tonnes * 1000;
-                // un tunnel déjà démarré ne peut plus être ouvert : on n'y ajoute pas de lot
-                if ($tunnel->id !== $inclure && $tunnel->estDemarre()) {
+                // un tunnel démarré depuis moins de 24 h ne peut pas être ouvert : on n'y ajoute pas de lot
+                if ($tunnel->id !== $inclure && $tunnel->estDemarre() && ! $tunnel->peutEtreOuvert()) {
                     return false;
                 }
                 if ($tunnel->id === $inclure || $capacite <= 0) {
@@ -66,7 +66,7 @@ class LotForm
 
                 return $charge < $capacite;
             })
-            ->pluck('nom', 'id')->all();
+            ->mapWithKeys(fn (Tunnel $t) => [$t->id => $t->nom . ($t->estDemarre() ? ' (démarré, 24 h écoulées)' : '')])->all();
     }
 
     /**

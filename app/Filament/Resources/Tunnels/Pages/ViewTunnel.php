@@ -15,9 +15,16 @@ class ViewTunnel extends ViewRecord
         return 'Tunnel : ' . $this->record->nom;
     }
 
-    public function getSubheading(): ?string
+    /** La phrase d'état apparaît au démarrage du tunnel et disparaît d'elle-même quand les 24 h sont écoulées. */
+    public function getSubheading(): string|\Illuminate\Contracts\Support\Htmlable|null
     {
-        return 'État : ' . $this->record->libelleEtat();
+        $tunnel = $this->record->fresh();
+
+        if ($tunnel->etat() !== 'ferme') {
+            return null;
+        }
+
+        return new \Illuminate\Support\HtmlString('<span wire:poll.15s>' . e('État : ' . $tunnel->libelleEtat()) . '</span>');
     }
 
     protected function getHeaderActions(): array

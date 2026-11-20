@@ -27,6 +27,7 @@ class LotsRelationManager extends RelationManager
         return $table
             ->modifyQueryUsing(fn (Builder $query) => $query->where('statut', 'en_congelation')->with(['client', 'sortiesTunnel'])->latest('id'))
             ->paginated(false)
+            ->poll('15s')
             ->emptyStateHeading('Aucun lot en congélation.')
             ->emptyStateIcon('lucide-snowflake')
             ->recordClasses(fn ($record) => $this->getOwnerRecord()->etat() === 'pret' ? 'cd-ligne-alerte' : null)
@@ -74,7 +75,8 @@ class LotsRelationManager extends RelationManager
                     ->label('Bon de sortie')
                     ->icon('lucide-package-open')
                     ->color('info')
-                    ->visible(fn ($record) => ! $record->sortiesTunnel->contains(fn ($s) => in_array($s->statut, ['en_attente_paiement', 'paye'])))
+                    ->visible(fn ($record) => $this->getOwnerRecord()->estDemarre()
+                        && ! $record->sortiesTunnel->contains(fn ($s) => in_array($s->statut, ['en_attente_paiement', 'paye'])))
                     ->disabled(fn () => ! $this->getOwnerRecord()->peutEtreOuvert())
                     ->tooltip(fn () => $this->getOwnerRecord()->peutEtreOuvert() ? null : 'Tunnel fermé jusqu\'au ' . $this->getOwnerRecord()->ouvrableLe()->format('d/m à H:i'))
                     ->modalHeading(fn ($record) => 'Bon de sortie du lot ' . $record->numero)

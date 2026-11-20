@@ -32,6 +32,13 @@
         </h2>
         <span class="cd-marque-trait"></span>
     </div>
-
-    <p class="cd-marque-signature">@francine</p>
+    <p class="cd-marque-signature" aria-hidden="true">&nbsp;</p>
 </aside>
+
+{{-- pied de page sur toute la largeur : auteur de l'application --}}
+<footer class="cd-auteur-pied">
+    <span class="cd-auteur-nom">Conçu et développé par {{ config('auteur.nom') }}</span>
+    @if (filled(config('auteur.email')))<span class="cd-auteur-info"><x-filament::icon icon="lucide-mail" class="cd-auteur-icone" />{{ config('auteur.email') }}</span>@endif
+    @if (filled(config('auteur.telephone')))<span class="cd-auteur-info"><x-filament::icon icon="lucide-phone" class="cd-auteur-icone" />{{ config('auteur.telephone') }}</span>@endif
+    @if (filled(config('auteur.adresse')))<span class="cd-auteur-info"><x-filament::icon icon="lucide-map-pin" class="cd-auteur-icone" />{{ config('auteur.adresse') }}</span>@endif
+</footer>

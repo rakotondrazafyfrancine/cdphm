@@ -5,7 +5,7 @@
             {{ $this->getTitreCartes() }}
         </div>
 
-        <div class="cd-grille-cartes" style="--cd-min: {{ $this->getLargeurMinCarte() }}px">
+        <div class="cd-grille-cartes" @if ($this instanceof \App\Filament\Resources\Tunnels\Pages\ListTunnels) wire:poll.30s @endif style="--cd-min: {{ $this->getLargeurMinCarte() }}px">
             @forelse ($this->getCartes() as $record)
                 @php
                     $estTunnel = $record instanceof \App\Models\Tunnel;
