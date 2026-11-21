@@ -30,7 +30,7 @@
             <span>Gestion</span>
             <span>des stocks</span>
         </h2>
-        <span class="cd-marque-trait"></span>
+        
     </div>
     <p class="cd-marque-signature" aria-hidden="true">&nbsp;</p>
 </aside>

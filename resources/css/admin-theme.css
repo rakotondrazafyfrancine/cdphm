@@ -193,7 +193,7 @@ html { font-size: 15px; }
 
 /* ===== Page de connexion : texte de marque (bleu mer) à gauche, formulaire à droite ===== */
 .fi-simple-layout { position: relative; min-height: 100vh; overflow: hidden;
-  background-color: #eaf6fd !important;
+  background-color: #2b95d0 !important;
   background-image: none !important; }
 .fi-simple-layout::before, .fi-simple-layout::after { content: none; }
 .fi-simple-main-ctn { position: relative; z-index: 1; }
@@ -206,8 +206,8 @@ html { font-size: 15px; }
 /* Panneau de marque : écrans larges = moitié gauche ; petits écrans = bandeau en haut */
 .cd-marque { position: relative; z-index: 2; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; gap: 2rem; color: #fff;
   padding: 2.25rem 1.5rem 1.75rem; text-align: center;
-  background: #0a4a8a; }
-.cd-marque-decor { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  background: transparent; }
+.cd-marque-decor { display: none; }
 .cd-marque-poisson { position: absolute; width: 22rem; height: 22rem; right: -5rem; top: 38%; color: #1b5792; transform: rotate(-12deg); }
 .cd-bulle { position: absolute; bottom: -2rem; border-radius: 50%; border: 1.5px solid #789bbf; background: none; animation: cd-monte 12s linear infinite; opacity: 0; }
 .cd-vague { position: absolute; left: 0; width: 200%; background-repeat: repeat-x; background-size: 50% 100%; animation: cd-onde 18s linear infinite; }
@@ -221,14 +221,14 @@ html { font-size: 15px; }
 .cd-marque-tete, .cd-marque-contenu, .cd-marque-signature { position: relative; z-index: 1; }
 .cd-marque-logo { display: block; height: 3.2rem; margin: 0 auto .75rem; object-fit: contain; }
 .cd-marque-societe { font-size: 3.4rem; line-height: 1; font-weight: 900; letter-spacing: .08em; color: #ffffff; }
-.cd-marque-texte { max-width: 26rem; margin: .7rem auto 0; font-size: .92rem; line-height: 1.45; color: #dae4ed; }
+.cd-marque-texte { max-width: 26rem; margin: .7rem auto 0; font-size: .92rem; line-height: 1.45; color: #ffffff; }
 .cd-marque-titre { display: flex; flex-direction: column; font-size: 2.1rem; line-height: 1.05; font-weight: 800; letter-spacing: -.01em; color: #fff; }
-.cd-marque-titre span:last-child { color: #7dd3fc; }
-.cd-marque-trait { display: block; width: 4rem; height: .3rem; border-radius: 999px; background: #22d3ee; margin: 1.2rem auto 0; }
-.cd-auteur-pied { position: fixed; inset: auto 0 0 0; z-index: 50; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .15rem 1.4rem; padding: .55rem 1rem; background: #0b2a47; color: #dae4ed; font-size: .8rem; line-height: 1.4; }
-.cd-auteur-nom { font-weight: 700; color: #ffffff; }
+.cd-marque-titre span:last-child { color: #0b3a66; }
+.cd-marque-trait { display: block; width: 4rem; height: .3rem; border-radius: 999px; background: #ffffff; margin: 1.2rem auto 0; }
+.cd-auteur-pied { position: fixed; inset: auto 0 0 0; z-index: 50; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 0 1rem; padding: .3rem .75rem; background: transparent; color: #e6f4fc; font-size: .65rem; line-height: 1.3; }
+.cd-auteur-nom { font-weight: 500; color: #ffffff; }
 .cd-auteur-info { display: inline-flex; align-items: center; gap: .35rem; }
-.cd-auteur-icone { width: .9rem; height: .9rem; color: #7dd3fc; flex: none; }
+.cd-auteur-icone { width: .7rem; height: .7rem; color: #ffffff; flex: none; }
 
 @media (min-width: 1024px) {
   .cd-marque { position: fixed; inset: 0 auto 0 0; width: 52%; padding: 3rem 4rem 2.25rem; text-align: left; }
