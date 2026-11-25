@@ -68,6 +68,7 @@ class AdminPanelProvider extends PanelProvider
                 \Filament\Navigation\NavigationGroup::make('Données de base')->collapsible()->collapsed(),
                 \Filament\Navigation\NavigationGroup::make('Suivi')->collapsible()->collapsed(),
                 \Filament\Navigation\NavigationGroup::make('Administration')->collapsible()->collapsed(),
+                \Filament\Navigation\NavigationGroup::make("\u{200B}"),
             ])
             ->font('Inter', url: '/fonts/inter/inter.css', provider: \Filament\FontProviders\LocalFontProvider::class)
             ->maxContentWidth('full')

@@ -625,3 +625,6 @@ html.dark .fi-wi-stats-overview-stat { border: 2px solid transparent !important;
 .fi-section:has(.fi-wi-stats-overview-stat), .fi-section-content:has(> .fi-grid-col .fi-wi-stats-overview-stat) { background: transparent !important; border: 0 !important; box-shadow: none !important; }
 /* la section qui contient les statistiques n'a ni fond blanc ni contour */
 html:not(.dark) .fi-section:has(.fi-wi-stats-overview-stat), html.dark .fi-section:has(.fi-wi-stats-overview-stat) { background: transparent !important; border: 0 !important; box-shadow: none !important; --tw-ring-shadow: 0 0 #0000 !important; }
+
+/* Paramètres : élément seul en fin de menu, sans titre de groupe */
+.fi-sidebar-group[data-group-label="B"] .fi-sidebar-group-btn { display: none; }

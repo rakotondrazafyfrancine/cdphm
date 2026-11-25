@@ -33,7 +33,8 @@ class Parametres extends Page
 
     protected static ?int $navigationSort = 100;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Administration';
+    /** Page à part (hors « Administration ») : groupe sans titre, placé en dernier dans le menu. */
+    protected static string|\UnitEnum|null $navigationGroup = "\u{200B}";
 
     protected static string|BackedEnum|null $navigationIcon = 'lucide-settings';
 
@@ -43,7 +44,6 @@ class Parametres extends Page
     {
         $this->form->fill([
             'nom' => Parametre::lire('nom', 'CDPHM'),
-            'logo' => Parametre::lire('logo'),
             'contact' => Parametre::lire('contact'),
             'lieu' => Parametre::lire('lieu'),
         ]);
@@ -59,21 +59,11 @@ class Parametres extends Page
         return $schema
             ->components([
                 Grid::make(['default' => 1, 'lg' => 3])->schema([
-                    // à gauche : le logo et le résumé de l'établissement
+                    // à gauche : le résumé de l'établissement
                     Section::make()
-                        ->extraAttributes(['class' => 'cd-profil-section cd-logo-section'])
+                        ->extraAttributes(['class' => 'cd-profil-section'])
                         ->columnSpan(['lg' => 1])
                         ->schema([
-                            FileUpload::make('logo')
-                                ->hiddenLabel()->placeholder(new \Illuminate\Support\HtmlString('&nbsp;'))
-                                ->image()
-                                ->imageEditor()
-                                ->imagePreviewHeight('140')
-                                ->disk('public')
-                                ->directory('logos')
-                                ->visibility('public')
-                                ->maxSize(2048)
-                                ->helperText('Clique sur le logo pour le changer.'),
                             View::make('filament.pages.carte-parametres'),
                         ]),
 
@@ -148,7 +138,6 @@ class Parametres extends Page
         }
 
         Parametre::ecrire('nom', $data['nom']);
-        Parametre::ecrire('logo', $data['logo'] ?: null);
         Parametre::ecrire('contact', filled($data['contact'] ?? null) ? trim($data['contact']) : null);
         Parametre::ecrire('lieu', filled($data['lieu'] ?? null) ? trim($data['lieu']) : null);
 
